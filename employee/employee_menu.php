@@ -31,8 +31,8 @@
             
             <div class="flex-shrink-0">
                 <div class="avatar placeholder border border-primary/20 p-2 rounded-full bg-base-300">
-                    <div class="w-24 md:w-32 rounded-full bg-gradient-to-tr from-primary to-secondary text-primary-content text-3xl font-extrabold shadow-lg">
-                        <?= strtoupper(substr($employee['Ename'], 0, 2)) ?>
+                    <div class="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-tr from-primary to-secondary text-primary-content text-3xl font-extrabold shadow-lg grid place-items-center">
+                        <span class="block leading-none text-center"><?= htmlspecialchars(getInitials($employee['Ename'] ?? '', 'S')) ?></span>
                     </div>
                 </div>
             </div>

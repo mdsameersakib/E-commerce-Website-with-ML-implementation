@@ -2,7 +2,7 @@
 include '../includes/dbconnect.php';
 ?>
 <!DOCTYPE html>
-<html lang="en" data-theme="luxury">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +10,7 @@ include '../includes/dbconnect.php';
     <!-- DaisyUI + Tailwind CDN -->
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="../css/theme.css" rel="stylesheet" type="text/css" />
     <script src="https://kit.fontawesome.com/d3eca7cd97.js" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -22,8 +23,8 @@ include '../includes/dbconnect.php';
     <!-- Navbar -->
     <div class="navbar bg-base-200/90 backdrop-blur-md sticky top-0 z-50 px-4 md:px-8 border-b border-white/5 shadow-md justify-between">
         <div class="navbar-start">
-            <a href="#" class="btn btn-ghost text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary gap-1 normal-case">
-                <i class="fa-solid fa-holly-berry text-primary"></i> ShopSphere
+            <a href="#" class="btn btn-ghost text-2xl font-extrabold text-primary gap-1 normal-case">
+                <i class="fa-solid fa-holly-berry"></i> ShopSphere
                 <span class="badge badge-error badge-sm font-bold uppercase tracking-wider">Admin</span>
             </a>
         </div>
@@ -211,7 +212,7 @@ include '../includes/dbconnect.php';
                         </div>
                     </div>
                     <div class="flex justify-end max-w-4xl mt-6">
-                        <button class="btn btn-secondary bg-gradient-to-r from-secondary to-accent border-none text-white rounded-2xl px-10 font-bold shadow-lg" onclick="newEmployee()">
+                        <button class="btn btn-secondary border-none text-white rounded-2xl px-10 font-bold shadow-lg" onclick="newEmployee()">
                             Create Employee Account
                         </button>
                     </div>

@@ -20,3 +20,8 @@ Thumbs.db
 # Python files
 __pycache__/
 *.pyc
+
+# Local database files
+db_data/
+mysql.sock
+mysql.pid

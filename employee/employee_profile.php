@@ -18,7 +18,7 @@
         <div class="p-6 md:p-8 space-y-6">
             <!-- Title -->
             <div>
-                <h1 class="text-2xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Staff Account Settings</h1>
+                <h1 class="text-2xl font-extrabold tracking-tight text-primary">Staff Account Settings</h1>
                 <p class="text-sm text-base-content/50 mt-1">Review and update your staff profile information below.</p>
             </div>
             

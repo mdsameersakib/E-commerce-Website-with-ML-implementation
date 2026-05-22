@@ -3,13 +3,13 @@ body {
     margin: 0;
     padding: 0;
     font-family: "Merriweather", serif;
-    --accent: #fa6400;
+    --accent: #FF5B00;
     --bg: #e3e5e8;
     --bg2: #181c23;
     --text1: rgb(27, 27, 30);
     --text2: white;
-  }
-    
+}
+
 
 
 
@@ -396,7 +396,8 @@ hr {
     margin: auto;
     padding: 50px;
     border-radius: 15px;
-    background: linear-gradient(145deg, #ecf1f7, #c7cbd0);
+    background-color: #FF5B00;
+    background: none;
     box-shadow: 13px 13px 26px #bcbfc4,
         -13px -13px 26px #feffff;
 }
@@ -461,7 +462,7 @@ hr {
 }
 
 .button_outer {
-    background: #83ccd3;
+    background-color: #FF5B00;
     border-radius: 30px;
     text-align: center;
     height: 50px;
@@ -752,7 +753,7 @@ table {
     font-family: sans-serif;
     font-size: 24px;
     letter-spacing: 1px;
-    
+
 }
 
 caption {
@@ -770,20 +771,28 @@ td {
     text-align: center;
 }
 
-table input,.admin_search{
+table input,
+.admin_search {
     border-radius: 5px;
     height: 40px;
     font-size: 24px;
     width: 200px;
 }
+
 .stock-out {
-    background-color: #808080; /* Grey color */
-    color: #ffffff; /* White text */
+    background-color: #808080;
+    /* Grey color */
+    color: #ffffff;
+    /* White text */
 }
+
 .stock-out:hover {
-    background-color: #808080; /* Grey color */
-    color: #ffffff; /* White text */
+    background-color: #808080;
+    /* Grey color */
+    color: #ffffff;
+    /* White text */
 }
+
 .dropbtn {
     background-color: #04AA6D;
     color: white;
@@ -806,7 +815,7 @@ table input,.admin_search{
     z-index: 1;
     padding: 20px;
     border-radius: 15px;
-     
+
 }
 
 
@@ -826,7 +835,7 @@ table input,.admin_search{
     display: block;
 }
 
-.card:hover{
+.card:hover {
     scale: 103%;
     border: 3px solid rgb(230, 230, 230);
-  }
+}

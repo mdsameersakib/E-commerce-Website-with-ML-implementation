@@ -23,7 +23,7 @@
             <div class="text-6xl opacity-20 mb-4"><i class="fa-solid fa-receipt"></i></div>
             <h2 class="text-xl font-bold text-base-content/60">No orders found</h2>
             <p class="text-sm text-base-content/40 mt-1 mb-8">You haven't placed any orders yet.</p>
-            <a href="menu.php?userid=<?= urlencode($userid) ?>" class="btn btn-primary bg-gradient-to-r from-primary to-secondary border-none hover:opacity-90 transition-all text-white font-bold px-8 shadow-lg">
+            <a href="menu.php?userid=<?= urlencode($userid) ?>" class="btn btn-primary border-none hover:opacity-90 transition-all text-white font-bold px-8 shadow-lg">
                 Shop Now
             </a>
         </div>

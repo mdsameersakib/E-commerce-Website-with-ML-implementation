@@ -109,7 +109,7 @@
                 </div>
 
                 <div class="pt-4">
-                    <button class="btn btn-secondary w-full rounded-2xl font-bold bg-gradient-to-r from-secondary to-accent border-none hover:opacity-90 shadow-lg text-white" onclick="addNewWarehouse()">
+                    <button class="btn btn-secondary w-full rounded-2xl font-bold border-none hover:opacity-90 shadow-lg text-white" onclick="addNewWarehouse()">
                         Create Depot
                     </button>
                 </div>

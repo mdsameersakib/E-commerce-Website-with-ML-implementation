@@ -14,9 +14,33 @@ if (!isset($_SESSION['userid'])) {
 
 $userid = $_SESSION['userid'];
 $base_dir = file_exists('includes/dbconnect.php') ? '' : '../';
+
+include_once __DIR__ . '/dbconnect.php';
+
+function getInitials($name, $fallback = 'U') {
+    $name = trim((string) $name);
+    if ($name === '') {
+        return $fallback;
+    }
+
+    $parts = preg_split('/\s+/', $name);
+    if (count($parts) > 1) {
+        return strtoupper(substr($parts[0], 0, 1) . substr(end($parts), 0, 1));
+    }
+
+    return strtoupper(substr($parts[0], 0, 2));
+}
+
+$avatar_initials = 'U';
+if (isset($conn)) {
+    $stmt_avatar = $conn->prepare("SELECT Cname FROM customer WHERE customer_id = ?");
+    $stmt_avatar->execute([$userid]);
+    $avatar_user = $stmt_avatar->fetch(PDO::FETCH_ASSOC);
+    $avatar_initials = getInitials($avatar_user['Cname'] ?? '');
+}
 ?>
 <!DOCTYPE html>
-<html lang="en" data-theme="luxury">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,6 +48,7 @@ $base_dir = file_exists('includes/dbconnect.php') ? '' : '../';
     <!-- DaisyUI + Tailwind CDN -->
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="<?php echo $base_dir; ?>css/theme.css" rel="stylesheet" type="text/css" />
     <script src="https://kit.fontawesome.com/d3eca7cd97.js" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -60,8 +85,8 @@ $base_dir = file_exists('includes/dbconnect.php') ? '' : '../';
                 </ul>
             </div>
             <!-- Brand Logo -->
-            <a href="<?php echo $base_dir; ?>menu.php?userid=<?php echo $userid; ?>" class="btn btn-ghost text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary gap-1 normal-case">
-                <i class="fa-solid fa-holly-berry text-primary"></i> ShopSphere
+            <a href="<?php echo $base_dir; ?>menu.php?userid=<?php echo $userid; ?>" class="btn btn-ghost text-2xl font-extrabold text-primary gap-1 normal-case">
+                <i class="fa-solid fa-holly-berry"></i> ShopSphere
             </a>
         </div>
         <div class="navbar-center hidden lg:flex">
@@ -96,9 +121,9 @@ $base_dir = file_exists('includes/dbconnect.php') ? '' : '../';
 
             <!-- User Profile Dropdown -->
             <div class="dropdown dropdown-end">
-                <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar border border-primary/20 hover:border-primary">
-                    <div class="w-10 rounded-full flex items-center justify-center bg-gradient-to-tr from-primary to-secondary text-primary-content">
-                        <span class="text-lg font-bold"><?php echo strtoupper(substr($userid, 0, 2)); ?></span>
+                <div tabindex="0" role="button" class="btn btn-ghost btn-circle border border-primary/20 hover:border-primary p-0">
+                    <div class="w-10 h-10 rounded-full grid place-items-center bg-primary text-primary-content">
+                        <span class="block leading-none text-center text-lg font-bold"><?php echo htmlspecialchars($avatar_initials); ?></span>
                     </div>
                 </div>
                 <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-200 rounded-box w-52 border border-white/5">

@@ -14,7 +14,7 @@ This project is designed to run out-of-the-box on a standard PHP and MySQL/Maria
 | **Authentication** | Plaintext password matching | **Native Bcrypt Hashing** | Secure password storage (`password_hash`/`password_verify`) |
 | **Session Management** | Unsecured native `session_start()` | **Hardened Sessions** | Mitigates Session Hijacking and Fixation |
 | **Recommendation Engine** | Slow, external Python script + file I/O | **Pure SQL Collaborative Filtering** | Real-time, concurrent-safe, zero dependency |
-| **User Interface** | Custom styling, inconsistent layouts | **Tailwind CSS & DaisyUI (CDN)** | Luxury dark theme, premium interactive UX |
+| **User Interface** | Custom styling, inconsistent layouts | **Tailwind CSS & DaisyUI (CDN)** | Clean light theme, premium interactive UX |
 | **Refund Uploads** | Unrestricted file uploads | **MIME-verified, UUID-renamed uploads** | Prevents remote code execution (RCE) |
 
 ---
@@ -100,7 +100,23 @@ LIMIT 6
 
 ## 3. UI Design System
 The frontend has been entirely redesigned using Tailwind CSS and DaisyUI, featuring:
-* A modern, premium Dark Theme layout.
+* A modern, premium Light Theme layout (fully removing dark theme and gradients).
 * Responsive grids for product catalogs.
 * Interactive feedback (hover transitions, active states, and beautiful micro-animations).
 * Standardized component-based includes (`header.php` and `footer.php`) to unify the navigation and visual system.
+
+---
+
+## 4. Test Credentials
+
+To test the application's features, you can log in using the following test accounts:
+
+### Customer Portal
+* **User ID:** `00001`
+* **Password:** `Welcome.`
+* **Name:** `Md. Sameer Sakib`
+
+### Staff / Employee Portal
+* **User ID:** `000002`
+* **Password:** `Password123!`
+

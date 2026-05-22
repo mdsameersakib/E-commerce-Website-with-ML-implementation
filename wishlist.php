@@ -23,7 +23,7 @@
             <div class="text-6xl opacity-20 mb-4"><i class="fa-solid fa-heart-crack"></i></div>
             <h2 class="text-xl font-bold text-base-content/60">Your wishlist is empty</h2>
             <p class="text-sm text-base-content/40 mt-1 mb-8">Browse the store and click the heart icon on any product to save it here.</p>
-            <a href="menu.php?userid=<?= urlencode($userid) ?>" class="btn btn-primary bg-gradient-to-r from-primary to-secondary border-none hover:opacity-90 transition-all text-white font-bold px-8 shadow-lg">
+            <a href="menu.php?userid=<?= urlencode($userid) ?>" class="btn btn-primary border-none hover:opacity-90 transition-all text-white font-bold px-8 shadow-lg">
                 Start Shopping
             </a>
         </div>
@@ -61,7 +61,7 @@
                             </td>
                             <td class="py-4 text-right">
                                 <div class="flex justify-end gap-2">
-                                    <button class="btn btn-primary btn-sm bg-gradient-to-r from-primary to-secondary border-none hover:opacity-90 text-white font-bold px-4" 
+                                    <button class="btn btn-primary btn-sm border-none hover:opacity-90 text-white font-bold px-4" 
                                             onclick="addToCart(<?= intval($row_u['product_id']) ?>)">
                                         <i class="fa-solid fa-cart-plus mr-1"></i> Add to Cart
                                     </button>

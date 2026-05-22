@@ -54,7 +54,7 @@
         <a href="categories/category_electronics.php?userid=<?php echo $userid; ?>" class="group">
             <div class="card bg-base-200 border border-white/5 group-hover:border-primary/30 shadow-xl group-hover:shadow-2xl transition-all duration-300 overflow-hidden h-full">
                 <div class="card-body items-center text-center p-8 relative">
-                    <div class="w-16 h-16 rounded-2xl bg-primary/10 group-hover:bg-primary/20 text-primary text-3xl flex items-center justify-center mb-4 transition-colors duration-300">
+                    <div class="w-16 h-16 rounded-2xl bg-primary text-primary-content text-3xl flex items-center justify-center mb-4 transition-colors duration-300 shadow-md">
                         <i class="fa-solid fa-plug group-hover:scale-110 transition-transform duration-300"></i>
                     </div>
                     <h3 class="card-title text-xl font-bold group-hover:text-primary transition-colors">Electronics</h3>
@@ -67,7 +67,7 @@
         <a href="categories/category_accessories.php?userid=<?php echo $userid; ?>" class="group">
             <div class="card bg-base-200 border border-white/5 group-hover:border-primary/30 shadow-xl group-hover:shadow-2xl transition-all duration-300 overflow-hidden h-full">
                 <div class="card-body items-center text-center p-8 relative">
-                    <div class="w-16 h-16 rounded-2xl bg-secondary/10 group-hover:bg-secondary/20 text-secondary text-3xl flex items-center justify-center mb-4 transition-colors duration-300">
+                    <div class="w-16 h-16 rounded-2xl bg-primary text-primary-content text-3xl flex items-center justify-center mb-4 transition-colors duration-300 shadow-md">
                         <i class="fa-solid fa-gem group-hover:scale-110 transition-transform duration-300"></i>
                     </div>
                     <h3 class="card-title text-xl font-bold group-hover:text-secondary transition-colors">Accessories</h3>
@@ -80,7 +80,7 @@
         <a href="categories/category_clothes.php?userid=<?php echo $userid; ?>" class="group">
             <div class="card bg-base-200 border border-white/5 group-hover:border-primary/30 shadow-xl group-hover:shadow-2xl transition-all duration-300 overflow-hidden h-full">
                 <div class="card-body items-center text-center p-8 relative">
-                    <div class="w-16 h-16 rounded-2xl bg-accent/10 group-hover:bg-accent/20 text-accent text-3xl flex items-center justify-center mb-4 transition-colors duration-300">
+                    <div class="w-16 h-16 rounded-2xl bg-primary text-primary-content text-3xl flex items-center justify-center mb-4 transition-colors duration-300 shadow-md">
                         <i class="fa-solid fa-shirt group-hover:scale-110 transition-transform duration-300"></i>
                     </div>
                     <h3 class="card-title text-xl font-bold group-hover:text-accent transition-colors">Clothes</h3>
@@ -93,7 +93,7 @@
         <a href="categories/category_stationery.php?userid=<?php echo $userid; ?>" class="group">
             <div class="card bg-base-200 border border-white/5 group-hover:border-primary/30 shadow-xl group-hover:shadow-2xl transition-all duration-300 overflow-hidden h-full">
                 <div class="card-body items-center text-center p-8 relative">
-                    <div class="w-16 h-16 rounded-2xl bg-info/10 group-hover:bg-info/20 text-info text-3xl flex items-center justify-center mb-4 transition-colors duration-300">
+                    <div class="w-16 h-16 rounded-2xl bg-primary text-primary-content text-3xl flex items-center justify-center mb-4 transition-colors duration-300 shadow-md">
                         <i class="fa-solid fa-book-open group-hover:scale-110 transition-transform duration-300"></i>
                     </div>
                     <h3 class="card-title text-xl font-bold group-hover:text-info transition-colors">Stationery</h3>
@@ -106,7 +106,7 @@
         <a href="categories/category_selfcare.php?userid=<?php echo $userid; ?>" class="group">
             <div class="card bg-base-200 border border-white/5 group-hover:border-primary/30 shadow-xl group-hover:shadow-2xl transition-all duration-300 overflow-hidden h-full">
                 <div class="card-body items-center text-center p-8 relative">
-                    <div class="w-16 h-16 rounded-2xl bg-success/10 group-hover:bg-success/20 text-success text-3xl flex items-center justify-center mb-4 transition-colors duration-300">
+                    <div class="w-16 h-16 rounded-2xl bg-primary text-primary-content text-3xl flex items-center justify-center mb-4 transition-colors duration-300 shadow-md">
                         <i class="fa-solid fa-mask group-hover:scale-110 transition-transform duration-300"></i>
                     </div>
                     <h3 class="card-title text-xl font-bold group-hover:text-success transition-colors">Self Care</h3>
@@ -119,7 +119,7 @@
         <a href="categories/category_healthcare.php?userid=<?php echo $userid; ?>" class="group">
             <div class="card bg-base-200 border border-white/5 group-hover:border-primary/30 shadow-xl group-hover:shadow-2xl transition-all duration-300 overflow-hidden h-full">
                 <div class="card-body items-center text-center p-8 relative">
-                    <div class="w-16 h-16 rounded-2xl bg-warning/10 group-hover:bg-warning/20 text-warning text-3xl flex items-center justify-center mb-4 transition-colors duration-300">
+                    <div class="w-16 h-16 rounded-2xl bg-primary text-primary-content text-3xl flex items-center justify-center mb-4 transition-colors duration-300 shadow-md">
                         <i class="fa-solid fa-kit-medical group-hover:scale-110 transition-transform duration-300"></i>
                     </div>
                     <h3 class="card-title text-xl font-bold group-hover:text-warning transition-colors">Health Care</h3>
@@ -132,7 +132,7 @@
         <a href="categories/category_food.php?userid=<?php echo $userid; ?>" class="group">
             <div class="card bg-base-200 border border-white/5 group-hover:border-primary/30 shadow-xl group-hover:shadow-2xl transition-all duration-300 overflow-hidden h-full">
                 <div class="card-body items-center text-center p-8 relative">
-                    <div class="w-16 h-16 rounded-2xl bg-error/10 group-hover:bg-error/20 text-error text-3xl flex items-center justify-center mb-4 transition-colors duration-300">
+                    <div class="w-16 h-16 rounded-2xl bg-primary text-primary-content text-3xl flex items-center justify-center mb-4 transition-colors duration-300 shadow-md">
                         <i class="fa-solid fa-utensils group-hover:scale-110 transition-transform duration-300"></i>
                     </div>
                     <h3 class="card-title text-xl font-bold group-hover:text-error transition-colors">Food Items</h3>
@@ -145,7 +145,7 @@
         <a href="categories/category_household.php?userid=<?php echo $userid; ?>" class="group">
             <div class="card bg-base-200 border border-white/5 group-hover:border-primary/30 shadow-xl group-hover:shadow-2xl transition-all duration-300 overflow-hidden h-full">
                 <div class="card-body items-center text-center p-8 relative">
-                    <div class="w-16 h-16 rounded-2xl bg-neutral-content/10 group-hover:bg-neutral-content/20 text-neutral-content text-3xl flex items-center justify-center mb-4 transition-colors duration-300">
+                    <div class="w-16 h-16 rounded-2xl bg-primary text-primary-content text-3xl flex items-center justify-center mb-4 transition-colors duration-300 shadow-md">
                         <i class="fa-solid fa-kitchen-set group-hover:scale-110 transition-transform duration-300"></i>
                     </div>
                     <h3 class="card-title text-xl font-bold transition-colors">Household</h3>

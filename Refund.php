@@ -13,7 +13,7 @@
     <div class="card bg-base-200 border border-white/5 shadow-2xl rounded-3xl overflow-hidden">
         <div class="p-6 md:p-8 space-y-6">
             <div>
-                <h1 class="text-2xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Request a Refund</h1>
+                <h1 class="text-2xl font-extrabold tracking-tight text-primary">Request a Refund</h1>
                 <p class="text-sm text-base-content/50 mt-1">Please provide the details below to request a refund for <strong><?= htmlspecialchars($product_name) ?></strong> (Order #<?= htmlspecialchars($order_id) ?>).</p>
             </div>
             
@@ -59,7 +59,7 @@
             <!-- Submit Button -->
             <div class="card-actions justify-end mt-4">
                 <a href="orderlist.php?customer=<?= urlencode($customer_id) ?>" class="btn btn-ghost rounded-2xl px-6">Cancel</a>
-                <button type="button" id="submit-refund-btn" class="btn btn-primary bg-gradient-to-r from-primary to-secondary border-none hover:opacity-90 text-white font-bold rounded-2xl px-8 shadow-lg">
+                <button type="button" id="submit-refund-btn" class="btn btn-primary border-none hover:opacity-90 text-white font-bold rounded-2xl px-8 shadow-lg">
                     Submit Request
                 </button>
             </div>

@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="luxury">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - E-Commerce Platform</title>   
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="css/theme.css" rel="stylesheet" type="text/css" />
     <script src="https://kit.fontawesome.com/d3eca7cd97.js" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -14,14 +15,14 @@
         }
     </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-base-300 via-base-100 to-base-300 flex items-center justify-center p-4">
+<body class="min-h-screen bg-base-300 flex items-center justify-center p-4">
     <div class="card w-full max-w-lg bg-base-200/80 backdrop-blur-md shadow-2xl border border-white/5 animate-fade-in my-8">
         <div class="card-body">
             <div class="flex flex-col items-center mb-6">
-                <div class="w-16 h-16 bg-gradient-to-tr from-primary to-secondary rounded-2xl flex items-center justify-center text-primary-content text-3xl shadow-lg mb-4">
+                <div class="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center text-primary-content text-3xl shadow-lg mb-4">
                     <i class="fa-solid fa-user-plus"></i>
                 </div>
-                <h2 class="card-title text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Create Account</h2>
+                <h2 class="card-title text-3xl font-extrabold text-primary">Create Account</h2>
                 <p class="text-sm text-base-content/60">Join us to explore and order amazing products</p>
             </div>
 
@@ -103,7 +104,7 @@
                 </div>
 
                 <div class="form-control mt-6">
-                    <button type="submit" class="btn btn-primary bg-gradient-to-r from-primary to-secondary border-none hover:opacity-90 transition-all duration-300 text-white font-bold tracking-wide">
+                    <button type="submit" class="btn btn-primary border-none hover:opacity-90 transition-all duration-300 text-white font-bold tracking-wide">
                         Register Account
                     </button>
                 </div>

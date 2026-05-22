@@ -41,7 +41,7 @@
             <div class="text-6xl opacity-20 mb-4"><i class="fa-solid fa-rotate-left"></i></div>
             <h2 class="text-xl font-bold text-base-content/60">No refund requests found</h2>
             <p class="text-sm text-base-content/40 mt-1 mb-8">You haven't requested any refunds yet.</p>
-            <a href="orderlist.php?customer=<?= urlencode($customer_id) ?>" class="btn btn-primary bg-gradient-to-r from-primary to-secondary border-none hover:opacity-90 transition-all text-white font-bold px-8 shadow-lg">
+            <a href="orderlist.php?customer=<?= urlencode($customer_id) ?>" class="btn btn-primary border-none hover:opacity-90 transition-all text-white font-bold px-8 shadow-lg">
                 View Order History
             </a>
         </div>

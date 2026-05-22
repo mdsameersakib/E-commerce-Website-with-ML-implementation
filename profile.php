@@ -26,9 +26,9 @@
     <div class="lg:col-span-1 flex flex-col gap-6">
         <!-- Profile summary card -->
         <div class="card bg-base-200 border border-white/5 shadow-xl p-6 rounded-3xl items-center text-center">
-            <div class="avatar mb-4">
-                <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-primary to-secondary text-primary-content flex items-center justify-center border-4 border-white/10">
-                    <span class="text-4xl font-extrabold"><?= strtoupper(substr($row_u['Cname'], 0, 2)) ?></span>
+            <div class="mb-4">
+                <div class="w-24 h-24 rounded-full bg-primary text-primary-content grid place-items-center border-4 border-white/10">
+                    <span class="block leading-none text-center text-4xl font-extrabold"><?= htmlspecialchars(getInitials($row_u['Cname'] ?? '')) ?></span>
                 </div>
             </div>
             <h2 class="text-2xl font-bold text-base-content"><?= htmlspecialchars($row_u['Cname']) ?></h2>
@@ -55,7 +55,7 @@
                 <label class="label"><span class="label-text font-semibold">Display Name</span></label>
                 <div class="flex flex-col sm:flex-row gap-3">
                     <input id="nameInput" type="text" value="<?= htmlspecialchars($row_u['Cname']) ?>" class="input input-bordered flex-grow focus:outline-none focus:border-primary" />
-                    <button class="btn btn-primary bg-gradient-to-r from-primary to-secondary border-none text-white font-bold px-6 shadow-md" onclick="update_name()">Update</button>
+                    <button class="btn btn-primary border-none text-white font-bold px-6 shadow-md" onclick="update_name()">Update</button>
                 </div>
             </div>
 
@@ -64,7 +64,7 @@
                 <label class="label"><span class="label-text font-semibold">Change Password</span></label>
                 <div class="flex flex-col sm:flex-row gap-3">
                     <input id="passInput" type="password" placeholder="Enter new password" class="input input-bordered flex-grow focus:outline-none focus:border-primary" />
-                    <button class="btn btn-primary bg-gradient-to-r from-primary to-secondary border-none text-white font-bold px-6 shadow-md" onclick="update_password()">Update</button>
+                    <button class="btn btn-primary border-none text-white font-bold px-6 shadow-md" onclick="update_password()">Update</button>
                 </div>
             </div>
 
@@ -73,7 +73,7 @@
                 <label class="label"><span class="label-text font-semibold">Delivery Address</span></label>
                 <div class="flex flex-col sm:flex-row gap-3">
                     <input id="addressInput" type="text" value="<?= htmlspecialchars($row_u['address']) ?>" class="input input-bordered flex-grow focus:outline-none focus:border-primary" />
-                    <button class="btn btn-primary bg-gradient-to-r from-primary to-secondary border-none text-white font-bold px-6 shadow-md" onclick="update_address()">Update</button>
+                    <button class="btn btn-primary border-none text-white font-bold px-6 shadow-md" onclick="update_address()">Update</button>
                 </div>
             </div>
         </div>
