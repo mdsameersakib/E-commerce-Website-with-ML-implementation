@@ -1,204 +1,156 @@
 <?php
-    // Include database connection file
+    $page_title = "Staff Profile - ShopSphere";
+    include 'employee_header.php';
     include '../includes/dbconnect.php';
-    // Check if customer_id is set in the URL
-    if(isset($_GET['employee'])) {
-        $employee_id = $_GET['employee'];
 
-        // Retrieve customer data from the database
-        $sql_u = "SELECT * FROM employee WHERE employee_id = $employee_id";
-        $res_u = mysqli_query($conn, $sql_u);
-        $row_u = mysqli_fetch_assoc($res_u);
-    } else {
-        // Redirect to an error page or handle the absence of customer_id in URL
-        // For example:
-        // header("Location: error.php");
-        // exit();
+    // Retrieve employee data from the database using PDO
+    $stmt = $conn->prepare("SELECT * FROM employee WHERE employee_id = ?");
+    $stmt->execute([$userid]);
+    $row_u = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$row_u) {
+        $row_u = ['Ename' => '', 'password' => '', 'address' => ''];
     }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu page</title>
-    <link rel="stylesheet" href="../css/menustyle.css">
-    <script src="https://kit.fontawesome.com/d3eca7cd97.js" crossorigin="anonymous"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
-</head>
-<body>
-    <section class="body">
-        <header class="header">
-            <div class="logo">
-            <span class="logotext"><i class="fa-solid fa-holly-berry"></i></span>
+
+<div class="max-w-2xl mx-auto my-8">
+    <div class="card bg-base-200 border border-white/5 shadow-2xl rounded-3xl overflow-hidden">
+        <div class="p-6 md:p-8 space-y-6">
+            <!-- Title -->
+            <div>
+                <h1 class="text-2xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Staff Account Settings</h1>
+                <p class="text-sm text-base-content/50 mt-1">Review and update your staff profile information below.</p>
             </div>
-            <div class="menu_icon">
-                <i class="fa-solid fa-bars"></i>
-            </div>
-            <nav class="navbar">
-                <a href="employee_menu.php?userid=<?php echo $employee_id; ?>">Menu</a>
-            </nav>
-            <div class="nav_icon">                
-                <a href="employee_profile.php?employee=<?php echo $employee_id;?>"><i class="fa-solid fa-user"></i></a>
+            
+            <div class="divider my-0"></div>
+
+            <!-- Toast Container -->
+            <div id="toast-container" class="toast toast-top toast-end z-50 hidden">
+                <div class="alert alert-success shadow-lg">
+                    <span id="toast-text">Profile updated successfully!</span>
+                </div>
             </div>
 
-        </header>
-        <div class="gap"></div>
-        <div hidden id="cus">  <?php echo $employee_id ; ?></div>
-        <section class="profile_box">
-            <h1 class="title">User ID: <span class="Cusername"><?php echo $employee_id; ?></span></h1>
-            <hr>
-             <form id="profileForm" class="profile" onsubmit="return false;">
-                <div>
-                    <span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspName:</span>
-                    <input id="nameInput" class="box2" type="text" placeholder="<?php echo $row_u['Ename'];?>">
-                    <button class="button-5" onclick="update_name(<?php echo  $employee_id; ?>)">Update</button>
+            <!-- Profile Info Card -->
+            <div class="bg-base-300/30 border border-white/5 rounded-2xl p-4 flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center text-xl font-bold">
+                    <i class="fa-solid fa-id-badge"></i>
                 </div>
                 <div>
-                    <span>Password:</span>
-                    <input id="passInput" class="box2" type="text" placeholder="<?php echo $row_u['password'];?>">
-                    <button class="button-5"onclick="update_password(<?php echo  $employee_id; ?>)">Update</button>
+                    <span class="text-base-content/40 text-xs block uppercase tracking-wider font-semibold">Employee ID</span>
+                    <span class="font-extrabold text-base text-base-content">#<?= htmlspecialchars($userid) ?></span>
                 </div>
-                <div>
-                    <span>&nbsp&nbsp&nbspAddress:</span>
-                    <input id="addressInput" class="box2" type="text" placeholder="<?php echo $row_u['address'];?>">
-                    <button class="button-5"onclick="update_address(<?php echo $employee_id; ?>)">Update</button>
+            </div>
+
+            <!-- Form Container -->
+            <div class="space-y-4">
+                <!-- Update Name -->
+                <div class="form-control w-full">
+                    <label class="label font-bold text-xs uppercase tracking-wider text-base-content/75">
+                        <span>Staff Name</span>
+                    </label>
+                    <div class="flex gap-2">
+                        <input id="nameInput" type="text" class="input input-bordered flex-grow rounded-2xl bg-base-300/30 focus:border-primary focus:outline-none" placeholder="<?= htmlspecialchars($row_u['Ename']) ?>">
+                        <button class="btn btn-primary rounded-2xl font-bold px-6" onclick="updateField('name')">Update</button>
+                    </div>
                 </div>
-            </form>
-        </section>
-    </section>
-    <script>
 
-        function update_name(customer_id) {
-            const varia = document.getElementById("cus");
-            let eid = varia.innerText
-            var nameInputValue = document.getElementById("nameInput").value;
-            console.log("Name input value:", nameInputValue);
-            console.log("Customer ID:", eid);
-            // Here you can add AJAX request to update the name in the database
-            fetch('../actions/employee_updateName.php', {
+                <!-- Update Password -->
+                <div class="form-control w-full">
+                    <label class="label font-bold text-xs uppercase tracking-wider text-base-content/75">
+                        <span>Password</span>
+                    </label>
+                    <div class="flex gap-2">
+                        <input id="passInput" type="password" class="input input-bordered flex-grow rounded-2xl bg-base-300/30 focus:border-primary focus:outline-none" placeholder="••••••••">
+                        <button class="btn btn-primary rounded-2xl font-bold px-6" onclick="updateField('password')">Update</button>
+                    </div>
+                </div>
 
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'new_name=' + nameInputValue + '&employee_id=' + eid, // Added '&' to separate parameters
-            }).then(response => {
-                    if (response.ok) {
-                        showNotification('Name Changed', 'success');
-                        sleep(1000).then(() => { refreshPage(); });
-                    } else {
-                        console.error('Fail');
-                    }
-                }).catch(error => {
-                    console.error('Error:', error);
-                });
+                <!-- Update Address -->
+                <div class="form-control w-full">
+                    <label class="label font-bold text-xs uppercase tracking-wider text-base-content/75">
+                        <span>Physical Address</span>
+                    </label>
+                    <div class="flex gap-2">
+                        <input id="addressInput" type="text" class="input input-bordered flex-grow rounded-2xl bg-base-300/30 focus:border-primary focus:outline-none" placeholder="<?= htmlspecialchars($row_u['address'] ?: 'Enter address') ?>">
+                        <button class="btn btn-primary rounded-2xl font-bold px-6" onclick="updateField('address')">Update</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="card-actions justify-start">
+                <a href="employee_menu.php?userid=<?= urlencode($userid) ?>" class="btn btn-ghost rounded-2xl px-6">
+                    <i class="fa-solid fa-chevron-left mr-2"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showToast(message) {
+    const toast = document.getElementById('toast-container');
+    const toastText = document.getElementById('toast-text');
+    toastText.innerText = message;
+    toast.classList.remove('hidden');
+    setTimeout(() => {
+        toast.classList.add('hidden');
+    }, 3000);
+}
+
+function updateField(field) {
+    const employee_id = <?= json_encode($userid); ?>;
+    let url = '';
+    let body = '';
+    let val = '';
+
+    if (field === 'name') {
+        val = document.getElementById('nameInput').value.trim();
+        if (!val) {
+            alert('Please enter a new name.');
+            return;
         }
-        function update_password(customer_id) {
-            const varia = document.getElementById("cus");
-            let eid = varia.innerText
-            var nameInputValue = document.getElementById("passInput").value;
-            console.log("Name input value:", nameInputValue);
-            console.log("Customer ID:", eid);
-            // Here you can add AJAX request to update the name in the database
-            fetch('../actions/employee_updatePass.php', {
-
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'new_password=' + nameInputValue + '&employee_id=' + eid, // Added '&' to separate parameters
-            }).then(response => {
-                    if (response.ok) {
-                        showNotification('Password Changed', 'success');
-                        sleep(1000).then(() => { refreshPage(); });
-                  
-                    } else {
-                        console.error('Fail');
-                    }
-                }).catch(error => {
-                    console.error('Error:', error);
-                });
+        url = '../actions/employee_updateName.php';
+        body = `new_name=${encodeURIComponent(val)}&employee_id=${encodeURIComponent(employee_id)}`;
+    } else if (field === 'password') {
+        val = document.getElementById('passInput').value.trim();
+        if (!val) {
+            alert('Please enter a new password.');
+            return;
         }
-        function update_address(customer_id) {
-            const varia = document.getElementById("cus");
-            let eid = varia.innerText
-            var nameInputValue = document.getElementById("addressInput").value;
-            console.log("Name input value:", nameInputValue);
-            console.log("Customer ID:", eid);
-            // Here you can add AJAX request to update the name in the database
-            fetch('../actions/employee_updateAddress.php', {
-
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'new_address=' + nameInputValue + '&employee_id=' + eid, // Added '&' to separate parameters
-            }).then(response => {
-                    if (response.ok) {
-                        showNotification('Address Changed', 'success');
-                        sleep(1000).then(() => { refreshPage(); });
-
-                    } else {
-                        console.error('Fail');
-                    }
-                }).catch(error => {
-                    console.error('Error:', error);
-                });
+        url = '../actions/employee_updatePass.php';
+        body = `new_password=${encodeURIComponent(val)}&employee_id=${encodeURIComponent(employee_id)}`;
+    } else if (field === 'address') {
+        val = document.getElementById('addressInput').value.trim();
+        if (!val) {
+            alert('Please enter a new address.');
+            return;
         }
-        function refreshPage(){
-                window.location.reload();
-            }
-        function showNotification(message, type) {
-            // Remove any existing notification
-            const existingNotification = document.querySelector('.notification.visible');
-            if (existingNotification) {
-                existingNotification.remove();
-            }
+        url = '../actions/employee_updateAddress.php';
+        body = `new_address=${encodeURIComponent(val)}&employee_id=${encodeURIComponent(employee_id)}`;
+    }
 
-            // Create new notification
-            const notification = document.createElement('div');
-            notification.classList.add('notification', type);
-            notification.textContent = message;
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: body
+    })
+    .then(response => response.text())
+    .then(data => {
+        showToast(`${field.charAt(0).toUpperCase() + field.slice(1)} updated successfully!`);
+        setTimeout(() => {
+            window.location.reload();
+        }, 1200);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Update failed.');
+    });
+}
+</script>
 
-            // Append the notification to the body
-            document.body.appendChild(notification);
-
-            // Trigger reflow to apply transition
-            void notification.offsetWidth;
-
-            // Add visible class to start fade in transition
-            notification.classList.add('visible');
-
-            // Remove the notification after 3 seconds
-            setTimeout(() => {
-                // Start fade out transition
-                notification.classList.remove('visible');
-                // Remove the notification from the DOM after transition ends
-                setTimeout(() => {
-                    notification.remove();
-                }, 500); // Transition duration
-            }, 1000); // Notification duration
-        }
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-        function redirectToOrderList() {
-        // Retrieve customer ID from the hidden element
-        const customerId = document.getElementById("cus").innerText;
-
-        // Redirect to orderlist.php with customer ID as a query parameter
-        window.location.href = `../orderlist.php?customer=${customerId}`;
-        }
-        function redirectToRefund() {
-        // Retrieve customer ID from the hidden element
-        const customerId = document.getElementById("cus").innerText;
-
-        // Redirect to orderlist.php with customer ID as a query parameter
-        window.location.href = `../refund_list.php?customer=${customerId}`;
-        }
-    </script>
-</body>
-</html>
+<?php include 'employee_footer.php'; ?>

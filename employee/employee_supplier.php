@@ -1,166 +1,175 @@
 <?php
-// Include database connection file
-include '../includes/dbconnect.php';
+    $page_title = "Logistics Suppliers - ShopSphere";
+    include 'employee_header.php';
+    include '../includes/dbconnect.php';
 
-// Check if employee_id is set in the URL
-if(isset($_GET['employee'])) {
-    $employee_id = $_GET['employee'];
-
-    // Retrieve warehouse data from the database
-    $sql_u = "SELECT * FROM supplier where employee_id='$employee_id'";
-    $res_u = mysqli_query($conn, $sql_u);
-}
+    // Retrieve supplier data from the database using PDO for this specific employee
+    try {
+        $stmt = $conn->prepare("SELECT * FROM supplier WHERE employee_id = ? ORDER BY supplier_id ASC");
+        $stmt->execute([$userid]);
+        $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        $suppliers = [];
+    }
 ?>
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu page</title>
-    <link rel="stylesheet" href="../css/menustyle.css">
-    <script src="https://kit.fontawesome.com/d3eca7cd97.js" crossorigin="anonymous"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap"
-        rel="stylesheet">
-</head>
-<body>
-    <section class="body">
-        <header class="header">
-            <div class="logo">
-                <span class="logotext"><i class="fa-solid fa-holly-berry"></i></span>
+<div class="space-y-8 mb-12">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row justify-between items-baseline gap-4 border-b border-white/5 pb-4">
+        <div>
+            <h1 class="text-3xl font-extrabold tracking-tight">Suppliers & Logistics</h1>
+            <p class="text-sm text-base-content/50 mt-1">Manage brand partnerships, supplier details, and logistics pipelines.</p>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="toast toast-top toast-end z-50 hidden">
+        <div id="toast-alert" class="alert shadow-lg">
+            <span id="toast-text"></span>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Supplier Table Card (Takes 2 columns on lg screens) -->
+        <div class="card bg-base-200 border border-white/5 shadow-xl rounded-3xl overflow-hidden lg:col-span-2">
+            <div class="p-6">
+                <h2 class="card-title font-bold text-lg mb-4 text-primary"><i class="fa-solid fa-truck-ramp-box"></i> Associated Suppliers</h2>
+                
+                <?php if (empty($suppliers)): ?>
+                    <div class="text-center py-12 text-base-content/40">
+                        <i class="fa-solid fa-boxes-stacked text-5xl mb-3 opacity-20"></i>
+                        <p>No suppliers assigned to your account yet.</p>
+                    </div>
+                <?php else: ?>
+                    <div class="overflow-x-auto">
+                        <table class="table w-full text-left align-middle">
+                            <thead>
+                                <tr class="border-b border-white/5 text-base-content/60 text-xs">
+                                    <th class="py-3">Supplier ID</th>
+                                    <th class="py-3">Brand / Brand Name</th>
+                                    <th class="py-3">Contact Details</th>
+                                    <th class="py-3">Physical Address</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($suppliers as $row_u): ?>
+                                    <tr class="border-b border-white/5 hover:bg-base-300/30 transition-colors">
+                                        <td class="py-4 font-mono font-bold text-primary">#<?= htmlspecialchars($row_u['supplier_id']) ?></td>
+                                        <td class="py-4 text-sm font-bold"><?= htmlspecialchars($row_u['brand_name']) ?></td>
+                                        <td class="py-4 text-sm space-y-1">
+                                            <div class="flex items-center gap-1.5"><i class="fa-solid fa-phone text-xs opacity-50"></i> <span class="font-mono text-xs"><?= htmlspecialchars($row_u['phone_number']) ?></span></div>
+                                            <div class="flex items-center gap-1.5"><i class="fa-solid fa-envelope text-xs opacity-50"></i> <span class="text-xs opacity-80"><?= htmlspecialchars($row_u['email_address']) ?></span></div>
+                                        </td>
+                                        <td class="py-4 text-xs max-w-[200px] truncate opacity-90"><?= htmlspecialchars($row_u['address']) ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
             </div>
-
-            <div class="menu_icon">
-                <i class="fa-solid fa-bars"></i>
-            </div>
-            <div hidden id="cus">  <?php echo $employee_id ; ?></div>
-            <nav class="navbar">
-                <a href="employee_menu.php?userid=<?php echo $employee_id; ?>">Menu</a>
-            </nav>
-
-            <div class="nav_icon">
-            <a href="employee_profile.php?employee=<?php echo $employee_id;?>"><i class="fa-solid fa-user"></i></a>
-            </div>
-        </header>
-        <div class="placeholderImg">
-
         </div>
 
-
-        <section>
-
-            <div class="cart-container">
-                <h1 class="cart_title">Supplier</h1>
-                <table>
-                    <thead>
-                        <tr>
-                          <th>Supplier Id</th>
-                          <th>Brand Name</th>
-                          <th>Phone Number</th>
-                          <th>Email Address</th>
-                          <th>Address</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                      <?php
-                            while($row_u = mysqli_fetch_assoc($res_u)){
-                        ?>
-                        <tr>
-                          <th><?php echo $row_u['supplier_id']; ?></th>
-                          <td><?php echo $row_u['brand_name']; ?></td>
-                          <td><?php echo $row_u['phone_number']; ?></td>
-                          <td><?php echo $row_u['email_address']; ?></td>
-                          <td><?php echo $row_u['address']; ?></td>
-                        </tr>
-                        <?php 
-                            }
-                        ?>
-                        <!-- loop end -->
-                        <thead>
-                            <tr>
-                              <th>ADD NEW</th>
-                              <th><input type="text" id="BrandName"></th>
-                              <th><input type="text" id="PhoneNumber"></th>
-                              <th><input type="text" id="EmailAddress"></th>
-                              <th><input type="text" id="Address"></th>
-                              
-                            </tr>
-                          </thead>   
-                      </tbody>
-                </table>
+        <!-- Add New Supplier Form (Takes 1 column) -->
+        <div class="card bg-base-200 border border-white/5 shadow-xl rounded-3xl overflow-hidden h-fit">
+            <div class="p-6 space-y-4">
+                <h2 class="card-title font-bold text-lg text-secondary"><i class="fa-solid fa-user-plus"></i> Onboard Partner</h2>
+                <div class="divider my-0"></div>
                 
-                <div style="margin: 10px auto 20px 1600px;"><button class="button-5" onclick="addToSupply()">Submit</button></div>
-                <div class="gap"></div>     
+                <div class="form-control w-full">
+                    <label class="label font-bold text-xs uppercase tracking-wider text-base-content/70">
+                        <span>Brand / Corporate Name</span>
+                    </label>
+                    <input id="BrandName" type="text" class="input input-bordered w-full rounded-2xl bg-base-300/30 focus:border-secondary focus:outline-none" placeholder="Acme Corp">
+                </div>
+
+                <div class="form-control w-full">
+                    <label class="label font-bold text-xs uppercase tracking-wider text-base-content/70">
+                        <span>Phone Number</span>
+                    </label>
+                    <input id="PhoneNumber" type="text" class="input input-bordered w-full rounded-2xl bg-base-300/30 focus:border-secondary focus:outline-none font-mono" placeholder="+8801700000000">
+                </div>
+
+                <div class="form-control w-full">
+                    <label class="label font-bold text-xs uppercase tracking-wider text-base-content/70">
+                        <span>Email Address</span>
+                    </label>
+                    <input id="EmailAddress" type="email" class="input input-bordered w-full rounded-2xl bg-base-300/30 focus:border-secondary focus:outline-none" placeholder="contact@acme.com">
+                </div>
+
+                <div class="form-control w-full">
+                    <label class="label font-bold text-xs uppercase tracking-wider text-base-content/70">
+                        <span>Address</span>
+                    </label>
+                    <input id="Address" type="text" class="input input-bordered w-full rounded-2xl bg-base-300/30 focus:border-secondary focus:outline-none" placeholder="Factory Road, Dhaka">
+                </div>
+
+                <div class="pt-4">
+                    <button class="btn btn-secondary w-full rounded-2xl font-bold bg-gradient-to-r from-secondary to-accent border-none hover:opacity-90 shadow-lg text-white" onclick="addToSupply()">
+                        Register Partner
+                    </button>
+                </div>
             </div>
-            <script>
-                function addToSupply() {
-                    const brand_name = document.getElementById("BrandName").value.trim();
-                    const phone = document.getElementById("PhoneNumber").value.trim();
-                    const email = document.getElementById("EmailAddress").value.trim();
-                    const address = document.getElementById("Address").value.trim();
-                    const varia = document.getElementById("cus");
-                    const employee_id = varia.innerText.trim();
+        </div>
+    </div>
+</div>
 
-                    fetch('../actions/addToSupply.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: 'brand_name=' + encodeURIComponent(brand_name) +
-                            '&phone=' + encodeURIComponent(phone) + '&email=' + encodeURIComponent(email) +
-                            '&address=' + encodeURIComponent(address) + '&employee_id=' + encodeURIComponent(employee_id),
-                    }).then(response => {
-                        if (response.ok) {
-                            showNotification('Supplied successfully', 'success');
-                            setTimeout(function() {
+<script>
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast-container');
+    const alertBox = document.getElementById('toast-alert');
+    const toastText = document.getElementById('toast-text');
+    
+    alertBox.className = 'alert shadow-lg ' + (type === 'success' ? 'alert-success' : 'alert-error');
+    toastText.innerText = message;
+    toast.classList.remove('hidden');
+    
+    setTimeout(() => {
+        toast.classList.add('hidden');
+    }, 3000);
+}
+
+function addToSupply() {
+    const brand_name = document.getElementById("BrandName").value.trim();
+    const phone = document.getElementById("PhoneNumber").value.trim();
+    const email = document.getElementById("EmailAddress").value.trim();
+    const address = document.getElementById("Address").value.trim();
+    const employee_id = <?= json_encode($userid); ?>;
+
+    if (!brand_name || !phone || !email || !address) {
+        showToast('Please fill in all partner information.', 'error');
+        return;
+    }
+
+    const body = 'brand_name=' + encodeURIComponent(brand_name) +
+                 '&phone=' + encodeURIComponent(phone) + 
+                 '&email=' + encodeURIComponent(email) +
+                 '&address=' + encodeURIComponent(address) + 
+                 '&employee_id=' + encodeURIComponent(employee_id);
+
+    fetch('../actions/addToSupply.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: body,
+    })
+    .then(response => response.text())
+    .then(data => {
+        if (data.indexOf('successfully') !== -1) {
+            showToast('Supplier partner onboarded successfully!', 'success');
+            setTimeout(function() {
                 window.location.reload();
-            }, 2000);
-                        } else {
-                            showNotification('Failed to add item to cart', 'error');
-                        }
-                    }).catch(error => {
-                        showNotification('Error: ' + error, 'error');
-                    });
-                }
+            }, 1200);
+        } else {
+            showToast(data || 'Failed to onboard supplier.', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Network error onboarding supplier.', 'error');
+    });
+}
+</script>
 
-
-            function showNotification(message, type) {
-                // Remove any existing notification
-                const existingNotification = document.querySelector('.notification.visible');
-                if (existingNotification) {
-                    existingNotification.remove();
-                }
-
-                // Create new notification
-                const notification = document.createElement('div');
-                notification.classList.add('notification', type);
-                notification.textContent = message;
-
-                // Append the notification to the body
-                document.body.appendChild(notification);
-
-                // Trigger reflow to apply transition
-                void notification.offsetWidth;
-
-                // Add visible class to start fade in transition
-                notification.classList.add('visible');
-
-                // Remove the notification after 3 seconds
-                setTimeout(() => {
-                    // Start fade out transition
-                    notification.classList.remove('visible');
-                    // Remove the notification from the DOM after transition ends
-                    setTimeout(() => {
-                        notification.remove();
-                    }, 500); // Transition duration
-                }, 1000); // Notification duration
-            }
-            </script>          
-        </section>
-    </section>
-</body>
-
-</html>
+<?php include 'employee_footer.php'; ?>

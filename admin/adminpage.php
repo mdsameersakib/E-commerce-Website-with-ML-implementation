@@ -2,374 +2,360 @@
 include '../includes/dbconnect.php';
 ?>
 <!DOCTYPE html>
-<html data-theme="light">
-
+<html lang="en" data-theme="luxury">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu page</title>
-    <link rel="stylesheet" href="../css/menustyle.css">
+    <title>ShopSphere - Admin Control Center</title>
+    <!-- DaisyUI + Tailwind CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://kit.fontawesome.com/d3eca7cd97.js" crossorigin="anonymous"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap"
-        rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.1/dist/full.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+        }
+    </style>
 </head>
-
-<body>
-    <div
-        style="display: flex; height: 100px; background-color:#21262f; justify-content: space-evenly; align-items: center;">
-        <span style="font-weight: bold; font-size:42px; color: white; font-style: italic;">. . Admin Panel . .</span>
-
+<body class="min-h-screen bg-base-100 text-base-content flex flex-col">
+    <!-- Navbar -->
+    <div class="navbar bg-base-200/90 backdrop-blur-md sticky top-0 z-50 px-4 md:px-8 border-b border-white/5 shadow-md justify-between">
+        <div class="navbar-start">
+            <a href="#" class="btn btn-ghost text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary gap-1 normal-case">
+                <i class="fa-solid fa-holly-berry text-primary"></i> ShopSphere
+                <span class="badge badge-error badge-sm font-bold uppercase tracking-wider">Admin</span>
+            </a>
+        </div>
+        <div class="navbar-end">
+            <a href="../login.php" class="btn btn-outline btn-sm rounded-xl"><i class="fa-solid fa-right-from-bracket"></i> Exit Panel</a>
+        </div>
     </div>
 
-    <div class="gap"></div>
-    <div class="collapse collapse-arrow bg-slate-200 hover:bg-slate-100 w-11/12 m-auto">
-        <input type="radio" name="my-accordion-2" />
-        <div class="collapse-title text-xl font-medium">
-            Search Customer or Employee
+    <!-- Main Container -->
+    <main class="flex-grow p-4 md:p-8 max-w-5xl mx-auto w-full space-y-6">
+        <!-- Dashboard Header -->
+        <div class="border-b border-white/5 pb-4">
+            <h1 class="text-3xl font-extrabold tracking-tight">System Control Center</h1>
+            <p class="text-sm text-base-content/50 mt-1">Perform administrator search, manage staff registration, and inspect server configuration.</p>
         </div>
-        <div class="collapse-content">
 
-            <div class="cart-container"
-                style="height: fit-content; margin-top: 100px; border-radius: 15px; box-shadow: 1px 2px 5px grey;">
-                <div style="width: fit-content; margin: auto;font-size: 24px;">
-                    <div class="gap"></div>
-                    <div  class="flex flex-row-reverse ">
-                        <form method="post">
-                            <input type="text" placeholder="Search data" name="search" class="admin_search bg-slate-100"
-                                style="width: 500px; padding-left: 20px; border-radius: 15px 0px 0px 15px; margin-right: 0px; height: 45px;">
-                            <button class="button-5" name="submit"
-                                style="padding-top: 5px;margin-left: 0px;border-radius: 0px 10px 10px 0px;">Search</button>
-                        </form>
-                    </div>
+        <!-- Toast Notifications Container -->
+        <div id="toast-container" class="toast toast-top toast-end z-50 hidden">
+            <div id="toast-alert" class="alert shadow-lg">
+                <span id="toast-text"></span>
+            </div>
+        </div>
 
-                    <div class="gap"></div>
-
+        <!-- Accordions -->
+        <div class="space-y-4">
+            
+            <!-- Accordion 1: Search Customer / Employee -->
+            <div class="collapse collapse-arrow bg-base-200 border border-white/5 rounded-3xl shadow-lg">
+                <input type="radio" name="admin-accordion" checked="checked" /> 
+                <div class="collapse-title text-lg font-bold flex items-center gap-2 text-primary">
+                    <i class="fa-solid fa-magnifying-glass"></i> Search Customer or Employee
                 </div>
-                
-                <?php
-                if(isset($_POST['submit'])){
-                    $search = $_POST['search'];
-                    $len = strlen($search);
-                    if ($len == 5) {
-                    $query = "SELECT * FROM customer WHERE Cname='$search' OR customer_id='$search'";
-                    $query_run = mysqli_query($conn, $query);
-                    if(mysqli_num_rows($query_run) > 0) {
-                        $row = mysqli_fetch_array($query_run);
-                        $customer_id=$row['customer_id'];
-                        ?>
-                        <div style="width: fit-content; margin: auto;font-size: 24px;" ><h1>Customer Profile</h1></div> 
-                        <div class="h-4"></div>
-                            <table>
-                            <div hidden id="cus">  <?php echo $customer_id ; ?></div>
-                                <thead>
-                                    <tr>
-                                        <th>Customer ID</th>
-                                        <th>Customer Name</th>
-                                        <th>Phone Number</th>
-                                        <th>Email Address</th>
-                                        <th>Address</th>
-                                        <th>Action</th> 
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><?php echo $row['customer_id']; ?></td>
-                                        <td><?php echo $row['Cname']; ?></td>
-                                        <td><?php echo $row['phone']; ?></td>
-                                        <td><?php echo $row['email']; ?></td>
-                                        <td><?php echo $row['address']; ?></td>
-                                        <td><button type="button" class="button-6" style="background-color: red;" onclick="ban(<?php echo $customer_id; ?>)">BAN
-                                        </button></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div class="gap"></div>
-            
-                        <?php
-                    } else {
-                        ?>
-                        <div class="cart-container">Customer not found</div>
-                        <?php 
-                        }
-                    } else{
-                        $query = "SELECT * FROM employee WHERE Ename='$search' OR employee_id='$search'";
-                        $query_run = mysqli_query($conn, $query);
-                
-                        if(mysqli_num_rows($query_run) > 0) {
-                            $row = mysqli_fetch_array($query_run);
-                            $employee_id=$row['employee_id'];
-                            ?>
-                            <div style="width: fit-content; margin: auto;font-size: 24px;" ><h1>Employee Profile</h1></div> 
-                            <div class="h-4"></div>
-                                <table>
-                                <div hidden id="emp">  <?php echo $employee_id ; ?></div>
-                                    <thead>
-                                        <tr>
-                                            <th>Employee ID</th>
-                                            <th>Employee Name</th>
-                                            <th>Phone Number</th>
-                                            <th>Email Address</th>
-                                            <th>Address</th>
-                                            <th>Action</th> 
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><?php echo $row['employee_id']; ?></td>
-                                            <td><?php echo $row['Ename']; ?></td>
-                                            <td><?php echo $row['phone']; ?></td>
-                                            <td><?php echo $row['email']; ?></td>
-                                            <td><?php echo $row['address']; ?></td>
-                                            <td><button type="button" class="button-6" style="background-color: red;" onclick="ban_emp(<?php echo $employee_id; ?>)">BAN
-                                            </button></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <div class="gap"></div>
-                
-                            <?php
-                        } else {
-                            ?>
-                           <div class="cart-container" style="font-size: 20px;">Customer not found</div>
-            
-                            <?php 
+                <div class="collapse-content px-6 pb-6">
+                    <div class="divider mt-0 mb-6"></div>
+                    <form method="post" class="flex flex-col md:flex-row gap-2 max-w-2xl">
+                        <input type="text" placeholder="Search by name or exact ID..." name="search" required
+                               class="input input-bordered w-full rounded-2xl bg-base-300/30 focus:border-primary focus:outline-none"
+                               value="<?php echo htmlspecialchars($_POST['search'] ?? ''); ?>">
+                        <button class="btn btn-primary rounded-2xl px-8 font-bold" name="submit">Search</button>
+                    </form>
+
+                    <?php
+                    if (isset($_POST['submit'])) {
+                        $search = trim($_POST['search'] ?? '');
+                        $len = strlen($search);
+                        
+                        echo '<div class="mt-6 divider my-0"></div>';
+                        echo '<div class="mt-4">';
+                        
+                        if ($len == 5) {
+                            // Customer search
+                            $stmt = $conn->prepare("SELECT * FROM customer WHERE Cname = ? OR customer_id = ?");
+                            $stmt->execute([$search, $search]);
+                            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                            
+                            if ($row) {
+                                $customer_id = $row['customer_id'];
+                                ?>
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-md font-bold uppercase tracking-wider text-base-content/60"><i class="fa-solid fa-user text-primary"></i> Customer Profile</h3>
+                                </div>
+                                <div hidden id="cus"><?php echo htmlspecialchars($customer_id); ?></div>
+                                <div class="overflow-x-auto bg-base-300/30 p-4 rounded-3xl border border-white/5">
+                                    <table class="table w-full text-left">
+                                        <thead>
+                                            <tr class="border-b border-white/5 text-base-content/60 text-xs">
+                                                <th class="py-2">Customer ID</th>
+                                                <th class="py-2">Customer Name</th>
+                                                <th class="py-2">Phone Number</th>
+                                                <th class="py-2">Email Address</th>
+                                                <th class="py-2">Address</th>
+                                                <th class="py-2 text-right">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="border-b border-white/5 last:border-none">
+                                                <td class="font-mono text-primary py-3">#<?php echo htmlspecialchars($row['customer_id']); ?></td>
+                                                <td class="font-bold py-3"><?php echo htmlspecialchars($row['Cname']); ?></td>
+                                                <td class="font-mono py-3"><?php echo htmlspecialchars($row['phone']); ?></td>
+                                                <td class="py-3"><?php echo htmlspecialchars($row['email']); ?></td>
+                                                <td class="py-3 text-xs"><?php echo htmlspecialchars($row['address']); ?></td>
+                                                <td class="py-3 text-right">
+                                                    <button type="button" class="btn btn-error btn-sm rounded-xl font-bold" onclick="ban('<?php echo htmlspecialchars($customer_id); ?>')">
+                                                        <i class="fa-solid fa-ban"></i> BAN
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <?php
+                            } else {
+                                echo '<div class="alert alert-error shadow-md rounded-2xl"><i class="fa-solid fa-triangle-exclamation"></i> Customer not found.</div>';
                             }
-            
+                        } else {
+                            // Employee search
+                            $stmt = $conn->prepare("SELECT * FROM employee WHERE Ename = ? OR employee_id = ?");
+                            $stmt->execute([$search, $search]);
+                            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                            
+                            if ($row) {
+                                $employee_id = $row['employee_id'];
+                                ?>
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-md font-bold uppercase tracking-wider text-base-content/60"><i class="fa-solid fa-user-tie text-secondary"></i> Employee Profile</h3>
+                                </div>
+                                <div hidden id="emp"><?php echo htmlspecialchars($employee_id); ?></div>
+                                <div class="overflow-x-auto bg-base-300/30 p-4 rounded-3xl border border-white/5">
+                                    <table class="table w-full text-left">
+                                        <thead>
+                                            <tr class="border-b border-white/5 text-base-content/60 text-xs">
+                                                <th class="py-2">Employee ID</th>
+                                                <th class="py-2">Employee Name</th>
+                                                <th class="py-2">Phone Number</th>
+                                                <th class="py-2">Email Address</th>
+                                                <th class="py-2">Address</th>
+                                                <th class="py-2 text-right">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="border-b border-white/5 last:border-none">
+                                                <td class="font-mono text-secondary py-3">#<?php echo htmlspecialchars($row['employee_id']); ?></td>
+                                                <td class="font-bold py-3"><?php echo htmlspecialchars($row['Ename']); ?></td>
+                                                <td class="font-mono py-3"><?php echo htmlspecialchars($row['phone']); ?></td>
+                                                <td class="py-3"><?php echo htmlspecialchars($row['email']); ?></td>
+                                                <td class="py-3 text-xs"><?php echo htmlspecialchars($row['address']); ?></td>
+                                                <td class="py-3 text-right">
+                                                    <button type="button" class="btn btn-error btn-sm rounded-xl font-bold" onclick="ban_emp('<?php echo htmlspecialchars($employee_id); ?>')">
+                                                        <i class="fa-solid fa-ban"></i> BAN
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <?php
+                            } else {
+                                echo '<div class="alert alert-error shadow-md rounded-2xl"><i class="fa-solid fa-triangle-exclamation"></i> Employee not found.</div>';
+                            }
+                        }
+                        echo '</div>';
                     }
-                }
-                ?>
-            </div>
-        </div>
-    </div>
-    
-    <div class="h-4"></div>
-    <div class="collapse collapse-arrow bg-slate-200 hover:bg-slate-100 w-11/12 m-auto">
-        <input type="radio" name="my-accordion-2" />
-        <div class="collapse-title text-xl font-medium">
-            Add new employee
-        </div>
-        <div class="collapse-content">
-            <div class="flex flex-col justify-center gap-x-20 bg-slate-200 px-20 py-10 rounded">
-                <div class="flex gap-x-20 bg-slate-200 px-20 py-10 ">
-                    <label class="input input-bordered flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
-                            class="w-4 h-4 opacity-70">
-                            <path
-                                d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
-                        </svg>
-                        <input type="text" class="grow" placeholder="Username" id="Username" />
-                    </label>
-
-                    <label class="input input-bordered flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
-                            class="w-4 h-4 opacity-70">
-                            <path
-                                d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" />
-                            <path
-                                d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
-                        </svg>
-                        <input type="text" class="grow" placeholder="Email" id="Email" />
-                    </label>
-
-                    <label class="input input-bordered flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
-                            class="w-4 h-4 opacity-70">
-                            <path fill-rule="evenodd"
-                                d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        <input type="password" class="grow" placeholder="password" id="password"/>
-                    </label>
-                </div>
-                <div class="flex gap-20 bg-slate-200 px-20 py-5 ">
-                    <label class="input input-bordered flex items-center gap-2">
-                        <i class="fa-solid fa-phone"></i>
-                        <input type="text" class="grow" placeholder="Phone Number" id="phone_number" />
-                    </label>
-
-                    <label class="input input-bordered flex items-center gap-2">
-                        <i class="fa-solid fa-location-dot"></i>
-                        <input type="text" class="grow" placeholder="Address" id="Address"/>
-                    </label>
-
-                    <label class="input input-bordered flex items-center gap-2">
-                        <i class="fa-solid fa-user-tie"></i>
-                        <input type="text" class="grow" placeholder="Type" id="Type"/>
-                    </label>
-                </div>
-                <div class="flex flex-row-reverse w-10/12">
-                    <button class="btn btn-accent w-40" onclick="newEmployee('sada')">Create</button>
+                    ?>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="h-4"></div>
-    <div class="collapse collapse-arrow bg-slate-200 hover:bg-slate-100 w-11/12 m-auto">
-        <input type="radio" name="my-accordion-2" />
-        <div class="collapse-title text-xl font-medium">
-           Database Login Info
-        </div>
-        <div class="collapse-content">
 
-            <div class="cart-container"
-                style="height: fit-content; margin-top: 100px; border-radius: 15px; box-shadow: 1px 2px 5px grey;">
-                <div style="width: fit-content; margin: auto;font-size: 24px;">
-                    <div class="gap"></div>
-                    <div  class="flex flex-row-reverse ">
-                        <div>
-                        <h1 class="cart_title"><b>user=</b>"root"</h1>
-                        <h1 class="cart_title"><b>password=</b>password=""</h1>
-                        <h1 class="cart_title"><b>host=</b>"127.0.0.1"</h1>
-                        <h1 class="cart_title"><b>port=</b>3306</h1>
-                        <h1 class="cart_title"><b>database=</b>"online_shop"</h1>
+            <!-- Accordion 2: Add New Employee -->
+            <div class="collapse collapse-arrow bg-base-200 border border-white/5 rounded-3xl shadow-lg">
+                <input type="radio" name="admin-accordion" /> 
+                <div class="collapse-title text-lg font-bold flex items-center gap-2 text-secondary">
+                    <i class="fa-solid fa-user-plus"></i> Add New Employee
+                </div>
+                <div class="collapse-content px-6 pb-6">
+                    <div class="divider mt-0 mb-6"></div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl">
+                        <!-- Username -->
+                        <div class="form-control w-full">
+                            <label class="label font-bold text-xs uppercase tracking-wider text-base-content/70"><span>Username</span></label>
+                            <input type="text" id="Username" placeholder="john_doe" class="input input-bordered w-full rounded-2xl bg-base-300/30 focus:border-secondary focus:outline-none">
+                        </div>
+                        <!-- Email -->
+                        <div class="form-control w-full">
+                            <label class="label font-bold text-xs uppercase tracking-wider text-base-content/70"><span>Email Address</span></label>
+                            <input type="email" id="Email" placeholder="john@example.com" class="input input-bordered w-full rounded-2xl bg-base-300/30 focus:border-secondary focus:outline-none">
+                        </div>
+                        <!-- Password -->
+                        <div class="form-control w-full">
+                            <label class="label font-bold text-xs uppercase tracking-wider text-base-content/70"><span>Password</span></label>
+                            <input type="password" id="password" placeholder="••••••••" class="input input-bordered w-full rounded-2xl bg-base-300/30 focus:border-secondary focus:outline-none">
+                        </div>
+                        <!-- Phone Number -->
+                        <div class="form-control w-full">
+                            <label class="label font-bold text-xs uppercase tracking-wider text-base-content/70"><span>Phone Number</span></label>
+                            <input type="text" id="phone_number" placeholder="+8801700000000" class="input input-bordered w-full rounded-2xl bg-base-300/30 focus:border-secondary focus:outline-none font-mono">
+                        </div>
+                        <!-- Address -->
+                        <div class="form-control w-full">
+                            <label class="label font-bold text-xs uppercase tracking-wider text-base-content/70"><span>Home Address</span></label>
+                            <input type="text" id="Address" placeholder="Mirpur, Dhaka" class="input input-bordered w-full rounded-2xl bg-base-300/30 focus:border-secondary focus:outline-none">
+                        </div>
+                        <!-- Type -->
+                        <div class="form-control w-full">
+                            <label class="label font-bold text-xs uppercase tracking-wider text-base-content/70"><span>Staff Type / Role</span></label>
+                            <input type="text" id="Type" placeholder="Logistics" class="input input-bordered w-full rounded-2xl bg-base-300/30 focus:border-secondary focus:outline-none">
                         </div>
                     </div>
-
-                    <div class="gap"></div>
-
+                    <div class="flex justify-end max-w-4xl mt-6">
+                        <button class="btn btn-secondary bg-gradient-to-r from-secondary to-accent border-none text-white rounded-2xl px-10 font-bold shadow-lg" onclick="newEmployee()">
+                            Create Employee Account
+                        </button>
+                    </div>
                 </div>
             </div>
+
+            <!-- Accordion 3: Database Login Info -->
+            <div class="collapse collapse-arrow bg-base-200 border border-white/5 rounded-3xl shadow-lg">
+                <input type="radio" name="admin-accordion" /> 
+                <div class="collapse-title text-lg font-bold flex items-center gap-2 text-warning">
+                    <i class="fa-solid fa-database"></i> Database Connection Profile
+                </div>
+                <div class="collapse-content px-6 pb-6">
+                    <div class="divider mt-0 mb-6"></div>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div class="bg-base-300/40 p-4 rounded-2xl border border-white/5">
+                            <span class="text-base-content/40 text-xs block uppercase tracking-wider">Host</span>
+                            <span class="font-mono font-bold">127.0.0.1</span>
+                        </div>
+                        <div class="bg-base-300/40 p-4 rounded-2xl border border-white/5">
+                            <span class="text-base-content/40 text-xs block uppercase tracking-wider">Port</span>
+                            <span class="font-mono font-bold">3306</span>
+                        </div>
+                        <div class="bg-base-300/40 p-4 rounded-2xl border border-white/5">
+                            <span class="text-base-content/40 text-xs block uppercase tracking-wider">Database</span>
+                            <span class="font-mono font-bold">online_shop</span>
+                        </div>
+                        <div class="bg-base-300/40 p-4 rounded-2xl border border-white/5">
+                            <span class="text-base-content/40 text-xs block uppercase tracking-wider">Username</span>
+                            <span class="font-mono font-bold">root</span>
+                        </div>
+                        <div class="bg-base-300/40 p-4 rounded-2xl border border-white/5">
+                            <span class="text-base-content/40 text-xs block uppercase tracking-wider">Password</span>
+                            <span class="font-mono font-bold opacity-55">empty</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-    </div>
-    <div class="gap"></div>
+    </main>
+
+    <footer class="footer p-6 bg-base-200 text-base-content border-t border-white/5 text-center flex justify-between items-center mt-auto">
+        <aside class="items-center grid-flow-col">
+            <p>&copy; <?php echo date('Y'); ?> ShopSphere. Administrative Control Utility.</p>
+        </aside>
+    </footer>
+
     <script>
-       function ban(x) {
-    const varia = document.getElementById("cus");
-    let cid = varia.innerText;
-    console.log(cus);
-    fetch('../actions/ban.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: 'customer_id=' + cid, // Added '&' to separate parameters
-    }).then(response => {
-        if (response.ok) {
-            showNotification('Customer banned successfully', 'success', () => {
-                setTimeout(() => {
-                    location.reload(); // Reload the page after 2 seconds
-                }, 2000);
-            });
-        } else {
-            showNotification('Failed to ban customer', 'error');
-        }
-    }).catch(error => {
-        showNotification('Error: ' + error, 'error');
-    });
-}
-
-function ban_emp(x) {
-    const varia = document.getElementById("emp");
-    let eid = varia.innerText;
-    console.log(eid);
-    fetch('../actions/ban_emp.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: 'employee_id=' + eid, // Added '&' to separate parameters
-    }).then(response => {
-        if (response.ok) {
-            showNotification('Employee banned successfully', 'success', () => {
-                setTimeout(() => {
-                    location.reload(); // Reload the page after 2 seconds
-                }, 2000);
-            });
-        } else {
-            showNotification('Failed to ban employee', 'error');
-        }
-    }).catch(error => {
-        showNotification('Error: ' + error, 'error');
-    });
-}
-
-function newEmployee(x) {
-    console.log("lala");
-    const username = document.getElementById("Username").value;
-    const email = document.getElementById("Email").value;
-    const password = document.getElementById("password").value;
-    const phoneNumber = document.getElementById("phone_number").value;
-    const address = document.getElementById("Address").value;
-    const type = document.getElementById("Type").value;
-
-    // Create FormData object to send data in the fetch request
-    const formData = new FormData();
-    formData.append('username', username);
-    formData.append('email', email);
-    formData.append('password', password);
-    formData.append('phoneNumber', phoneNumber);
-    formData.append('address', address);
-    formData.append('type', type);
-
-    // Send data to new_employee.php using fetch
-    fetch('../actions/new_employee.php', {
-        method: 'POST',
-        body: formData,
-    }).then(response => {
-        if (response.ok) {
-            showNotification('New employee added successfully', 'success', () => {
-                setTimeout(() => {
-                    location.reload(); // Reload the page after 2 seconds
-                }, 2000);
-            });
-        } else {
-            showNotification('Failed to add new employee', 'error');
-        }
-    }).catch(error => {
-        showNotification('Error: ' + error, 'error');
-    });
-}
-
-function showNotification(message, type, callback) {
-    // Remove any existing notification
-    const existingNotification = document.querySelector('.notification.visible');
-    if (existingNotification) {
-        existingNotification.remove();
+    function showNotification(message, type, callback) {
+        const toast = document.getElementById('toast-container');
+        const alertBox = document.getElementById('toast-alert');
+        const toastText = document.getElementById('toast-text');
+        
+        alertBox.className = 'alert shadow-lg ' + (type === 'success' ? 'alert-success' : 'alert-error');
+        toastText.innerText = message;
+        toast.classList.remove('hidden');
+        
+        setTimeout(() => {
+            toast.classList.add('hidden');
+            if (callback) callback();
+        }, 1500);
     }
 
-    // Create new notification
-    const notification = document.createElement('div');
-    notification.classList.add('notification', type);
-    notification.textContent = message;
-
-    // Append the notification to the body
-    document.body.appendChild(notification);
-
-    // Trigger reflow to apply transition
-    void notification.offsetWidth;
-
-    // Add visible class to start fade in transition
-    notification.classList.add('visible');
-
-    // Remove the notification after 3 seconds
-    setTimeout(() => {
-        // Start fade out transition
-        notification.classList.remove('visible');
-        // Remove the notification from the DOM after transition ends
-        setTimeout(() => {
-            notification.remove();
-            if (callback) {
-                callback(); // Invoke the callback function if provided
+    function ban(cid) {
+        if (!confirm('Are you sure you want to delete/ban this customer: ' + cid + '?')) return;
+        
+        fetch('../actions/ban.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'customer_id=' + encodeURIComponent(cid),
+        }).then(response => {
+            if (response.ok) {
+                showNotification('Customer banned/deleted successfully!', 'success', () => {
+                    location.reload();
+                });
+            } else {
+                showNotification('Failed to ban customer.', 'error');
             }
-        }, 500); // Transition duration
-    }, 1000); // Notification duration
-}
+        }).catch(error => {
+            showNotification('Error: ' + error, 'error');
+        });
+    }
 
+    function ban_emp(eid) {
+        if (!confirm('Are you sure you want to delete/ban this employee: ' + eid + '?')) return;
 
+        fetch('../actions/ban_emp.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'employee_id=' + encodeURIComponent(eid),
+        }).then(response => {
+            if (response.ok) {
+                showNotification('Employee banned/deleted successfully!', 'success', () => {
+                    location.reload();
+                });
+            } else {
+                showNotification('Failed to ban employee.', 'error');
+            }
+        }).catch(error => {
+            showNotification('Error: ' + error, 'error');
+        });
+    }
 
+    function newEmployee() {
+        const username = document.getElementById("Username").value.trim();
+        const email = document.getElementById("Email").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const phoneNumber = document.getElementById("phone_number").value.trim();
+        const address = document.getElementById("Address").value.trim();
+        const type = document.getElementById("Type").value.trim();
 
+        if (!username || !email || !password) {
+            showNotification('Username, email, and password are required.', 'error');
+            return;
+        }
 
-</script>
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('email', email);
+        formData.append('password', password);
+        formData.append('phoneNumber', phoneNumber);
+        formData.append('address', address);
+        formData.append('type', type);
 
-
+        fetch('../actions/new_employee.php', {
+            method: 'POST',
+            body: formData,
+        }).then(response => {
+            if (response.ok) {
+                showNotification('New employee added successfully!', 'success', () => {
+                    location.reload();
+                });
+            } else {
+                showNotification('Failed to add new employee.', 'error');
+            }
+        }).catch(error => {
+            showNotification('Error: ' + error, 'error');
+        });
+    }
+    </script>
 </body>
-
-
 </html>

@@ -1,373 +1,444 @@
 <?php
-    // Include database connection file
+    $page_title = "ShopSphere - Product Details";
+    include 'includes/header.php';
     include 'includes/dbconnect.php';
-     // Exclude products with order_id assigned
-    $customer_id = $_GET['customer'];
-    $product_id= $_GET['product'];
-    $sql_p = "SELECT * FROM product where product_id='$product_id' ";
-    $sql_c = "SELECT * FROM customer where customer_id='$customer_id'";
     
-    $res_p = mysqli_query($conn, $sql_p);
-    $res_c = mysqli_query($conn, $sql_c);
-    $row_p=mysqli_fetch_assoc($res_p);
-    // Get the product name
-    $pname = $row_p['Pname']; // Example product name
-
-    // Define the path to the file
-    $filename = __DIR__ . "/ml/product_name.txt";
+    $product_id = $_GET['product'] ?? '';
     
-    // Write the product name to the file
-    file_put_contents($filename, $pname);
+    // Fetch product details
+    $stmt_p = $conn->prepare("SELECT * FROM product WHERE product_id = ?");
+    $stmt_p->execute([$product_id]);
+    $row_p = $stmt_p->fetch();
     
-    // Execute Python script
-    exec("python " . __DIR__ . "/ml/db_test.py");
+    if (!$row_p) {
+        echo "<div class='alert alert-error shadow-lg my-8'>Product not found.</div>";
+        include 'includes/footer.php';
+        exit();
+    }
+    
+    $pname = $row_p['Pname'];
     $imageData = $row_p['image'];
-    $sql_r = "SELECT review.user_review, customer.Cname
-          FROM review
-          JOIN customer ON review.customer_id = customer.customer_id
-          WHERE review.product_id = '$product_id'";
-
-    $res_r=mysqli_query($conn, $sql_r);
+    
+    // Fetch reviews
+    $stmt_r = $conn->prepare("
+        SELECT review.user_review, customer.Cname
+        FROM review
+        JOIN customer ON review.customer_id = customer.customer_id
+        WHERE review.product_id = ?
+    ");
+    $stmt_r->execute([$product_id]);
+    $reviews = $stmt_r->fetchAll();
 ?>
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu page</title>
-    <link rel="stylesheet" href="css/menustyle.css">
-    <script src="https://kit.fontawesome.com/d3eca7cd97.js" crossorigin="anonymous"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap"
-        rel="stylesheet">
+<!-- Back to Home -->
+<div class="mb-6">
+    <a href="menu.php?userid=<?= urlencode($userid) ?>" class="btn btn-ghost btn-sm gap-2">
+        <i class="fa-solid fa-arrow-left"></i> Back to Products
+    </a>
+</div>
 
-</head>
+<!-- Product Details Section -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-12 bg-base-200 border border-white/5 rounded-3xl p-6 md:p-10 shadow-xl mb-12">
+    <!-- Product Image -->
+    <div class="flex items-center justify-center bg-base-300 rounded-2xl overflow-hidden aspect-square border border-white/5 shadow-inner group">
+        <img src="<?= htmlspecialchars($imageData) ?>" alt="<?= htmlspecialchars($pname) ?>" class="object-cover w-full h-full max-h-[500px] group-hover:scale-105 transition-transform duration-500" />
+    </div>
 
-<body>
-    <section class="body">
-        <header class="header">
-            <div class="logo">
-            <span class="logotext"><i class="fa-solid fa-holly-berry"></i></span>
+    <!-- Product Text & Actions -->
+    <div class="flex flex-col justify-between">
+        <div>
+            <!-- Category and Rating Badges -->
+            <div class="flex flex-wrap items-center gap-2 mb-4">
+                <span class="badge badge-primary font-semibold py-2 px-3"><?= htmlspecialchars($row_p['category']) ?></span>
+                <span class="badge badge-neutral bg-base-300 border-none font-semibold py-2 px-3 text-warning gap-1">
+                    <i class="fa-solid fa-star"></i> <?= htmlspecialchars($row_p['rating']) ?> / 5
+                </span>
             </div>
 
-            <div class="menu_icon">
-                <i class="fa-solid fa-bars"></i>
-            </div>
+            <!-- Title -->
+            <h1 class="text-3xl md:text-4xl font-extrabold mb-4"><?= htmlspecialchars($pname) ?></h1>
 
-            <nav class="navbar">
-                <a href="menu.php?userid=<?php echo  $customer_id; ?>">Menu</a>
-                <div class="dropdown">
-                    <a href="">Categories</a>
-                    <div class="dropdown-content">
-                      <a href="categories/category_electronics.php?userid=<?php echo  $customer_id; ?>">Electronics</a>
-                      <a href="categories/category_accessories.php?userid=<?php echo  $customer_id; ?>">Accessories</a>
-                      <a href="categories/category_clothes.php?userid=<?php echo  $customer_id; ?>">Clothes</a>
-                      <a href="categories/category_stationery.php?userid=<?php echo  $customer_id; ?>">Stationery</a>
-                      <a href="categories/category_selfcare.php?userid=<?php echo  $customer_id; ?>">Self Care</a>
-                      <a href="categories/category_healthcare.php?userid=<?php echo  $customer_id; ?>">Health Care</a>
-                      <a href="categories/category_food.php?userid=<?php echo  $customer_id; ?>">Food Items</a>
-                      <a href="categories/category_household.php?userid=<?php echo  $customer_id; ?>">Household</a>
-                    </div>
-                  </div>
-            </nav>
-            <div hidden id="cus">  <?php echo $customer_id; ?></div>
-            <div class="nav_icon">
-                <a href="wishlist.php?customer=<?php echo $customer_id; ?>"><i class="fa-solid fa-heart"></i></a>
-                <a href="cart.php?customer=<?php echo $customer_id; ?>"><i class="fa-solid fa-cart-shopping"></i></a>
-                <a href="profile.php?customer=<?php echo $customer_id; ?>"><i class="fa-solid fa-user"></i></a>
-            </div>
-        </header>
-        <div class="gap"></div>
-        <div class="product_page_1">
-            <div><img src="<?php echo $imageData ?>" alt="Smartwatch.jpeg" /></div>
-            <div class="product_page_1_2">
-            <?php
-                // Define the path to the Python script
-                $result_filename = __DIR__ . "/ml/result_array.txt";
-                $result_array = file($result_filename, FILE_IGNORE_NEW_LINES);
-                $query = "SELECT * FROM product WHERE Pname IN (";
-                foreach ($result_array as $productName) {
-                    $query .= "'" . $conn->real_escape_string($productName) . "',";
-                }
-                $query = rtrim($query, ','); // Remove the trailing comma
-                $query .= ");";
-
-                // Execute the query
-                $result = $conn->query($query);
-                                ?>
-                <p><b>Name:</b> <?php echo  $row_p['Pname']; ?></p>
-                <p><b>Price:</b> <?php echo  $row_p['price']; ?> TK</p>
-                <p><b>Category:</b> <?php echo  $row_p['category']; ?></p>
-                <p><b>Rating:</b>
-                    <?php 
-                    $rating = $row_p['rating'];
-                    for ($i = 0; $i < $rating; $i++) {
-                        echo '<i class="fa-solid fa-star"></i>';
-                    }
-                    ?>
-                </p>
-                <div hidden id="prod">  <?php echo $product_id; ?></div>
-                <p><b>Description:</b> <?php echo  $row_p['review']; ?> </p>
-                <?php if ($row_p['stock'] == 0): ?>
-                            <button style="margin-left:20px;" type="button" class="button-5 stock-out" disabled>Stock Out</button>
-                        <?php else: ?>
-                            <button style="margin-left:20px;" type="button" class="button-5" onclick="addToCart(<?php echo $row_p['product_id']; ?>, <?php echo $customer_id; ?>)">Add to cart</button>
-                        <?php endif; ?>
-            </div>
-        </div>
-        <br>
-        <div class="product_page_2">
-            <div>
-            <p style="font-size: 24px; ">Rate this product: &nbsp&nbsp&nbsp&nbsp&nbsp<span class="star-rating">
-                        <label for="rate-1" style="--i:1"><i  onclick="give_rating(1)"
-                                class="fa-solid fa-star"></i></label>
-                        <input type="radio" name="rating" id="rate-1" value="1"checked>
-                        <label for="rate-2" style="--i:2"><i onclick="give_rating(2)"
-                                class="fa-solid fa-star"></i></label>
-                        <input type="radio" name="rating" id="rate-2" value="2" >
-                        <label for="rate-3" style="--i:3"><i onclick="give_rating(3)"
-                                class="fa-solid fa-star"></i></label>
-                        <input type="radio" name="rating" id="rate-3" value="3">
-                        <label for="rate-4" style="--i:4"><i onclick="give_rating(4)"
-                                class="fa-solid fa-star"></i></label>
-                        <input type="radio" name="rating" id="rate-4" value="4">
-                        <label for="rate-5" style="--i:5"><i onclick="give_rating(5)"
-                                class="fa-solid fa-star"></i></label>
-                        <input type="radio" name="rating" id="rate-5" value="5">
-                    </span></p>
-                <p style="font-size: 24px;">Write a Review:</p>
-                <div><textarea class="review_text" id="review_text" cols="100" rows="10"></textarea></div>
-                <button class="button-5" style="margin-left: 30px;" onclick="give_review()">Submit Review</button>
-            </div>
-        </div>
-
-
-        <br>
-        <div class="product_page_2">
-            <h2>Reviews by others</h2>
-
-            <?php
-            if ($res_r && mysqli_num_rows($res_r) > 0) {
-                while($row_r = mysqli_fetch_assoc($res_r)) {
-            ?>
-            <div style="display:flex;">
-                <p style="width: 80%;"><?php echo $row_r['Cname']; ?>  :    <?php echo $row_r['user_review']; ?></p>
-            </div>
-            <?php 
-                }
-            } else {
-            ?>
-            <div style="display:flex;">
-                <p style="width: 80%;"> No reviews Yet </p>
-            </div>
-            <?php
-            }
-            ?>
-        </div>
-        <div class="gap"></div>
-        <h1 style="margin-left: 200px;">Products you may also like: </h1>
-            <div class="container" style="margin-left: 180px;">
-                <?php
-                    while ($row_rec = $result->fetch_assoc()) {
-                        if ($row_rec['category'] == $row_p['category'] AND $row_rec['Pname'] != $row_p['Pname']) {
-                        
+            <!-- Price with potential discount -->
+            <div class="mb-6">
+                <?php 
+                $discount_stmt = $conn->prepare("SELECT * FROM discount WHERE product_id = ?");
+                $discount_stmt->execute([$product_id]);
+                $discount_row = $discount_stmt->fetch();
+                if ($discount_row): 
+                    $discount_value = $discount_row['percentage'];
+                    $new_price = $row_p['price'] - ($row_p['price'] * ($discount_value / 100));               
                 ?>
-                <div class="card">
-                    <div class="image">
-                        <a href="product_page.php?customer=<?php echo $customer_id; ?>&product=<?php echo $row_rec['product_id']; ?>">
-                        <?php $imageData = $row_rec['image'];
-                        echo '<img src="' . $imageData . '" alt=""><br>'; ?>
-                        </a>
+                    <div class="flex items-baseline gap-3">
+                        <span class="text-3xl font-black text-error">৳<?= number_format($new_price, 2) ?></span>
+                        <span class="text-lg line-through opacity-50">৳<?= number_format($row_p['price'], 2) ?></span>
+                        <span class="badge badge-error font-extrabold text-xs py-2 px-3"><?= htmlspecialchars($discount_value) ?>% OFF</span>
                     </div>
-                    <div class="caption">
-                        <p class="rate">
-                        <div class="card_info">
-                            <div><span><?php echo $row_rec['rating'];  ?> </span><i class="fas fa-star"></i></div>
-                            <div><button class="wishlist_btn"><i class="fas fa-heart" onclick="addTowishlist(<?php echo $row_rec['product_id']; ?>, <?php echo $customer_id; ?>); this.style.color = 'red';"></i>
-                                    <span class="tooltiptext">Add to wishlist</span>
-                                </button></div>
-                        </div>
-                        </p>
-                        <?php 
-                         $product_id = $row_rec['product_id'];
-                         $discount_query = "SELECT * FROM discount WHERE product_id = $product_id";
-                         $discount_result = mysqli_query($conn, $discount_query);
-                         if (mysqli_num_rows($discount_result) > 0) {
-                            $discount_row = mysqli_fetch_assoc($discount_result);
-                            $discount_value = $discount_row['percentage'];
-                            $new_price = $row_rec['price'] -($row_rec['price']*($discount_value/100));               
-                        
-                        ?>
+                <?php else: 
+                    $new_price = $row_p['price'];
+                ?>
+                    <span class="text-3xl font-black text-primary">৳<?= number_format($new_price, 2) ?></span>
+                <?php endif; ?>
+            </div>
 
-                        <p class="product_name"><?php echo $row_rec['Pname'];  ?> <span style="margin-left:10px; color:red;"><b><?php echo $discount_value; ?>%Off</b></span></p>
+            <!-- Description -->
+            <div class="prose prose-sm text-base-content/75 mb-6 max-w-none">
+                <h3 class="font-bold text-base-content text-lg mb-2">Description</h3>
+                <p class="leading-relaxed"><?= htmlspecialchars($row_p['review']) ?></p>
+            </div>
 
-                        <p class="price"><del><b><?php echo $row_rec['price']; ?></b>TK</del> <span style="color: red;"><?php echo $new_price; ?>TK</span></p>
-                        <?php 
-                         } else{
-                            $new_price=$row_rec['price'];
-                        ?>
-                        <p class="product_name"><?php echo $row_rec['Pname'];  ?></p>
+            <!-- Hidden tags for Javascript access -->
+            <div hidden id="cus"><?= htmlspecialchars($userid) ?></div>
+            <div hidden id="prod"><?= htmlspecialchars($product_id) ?></div>
+        </div>
 
-                        <p class="price"><b>৳<?php echo $new_price; ?>TK</b></p>
-                        <?php
-                         }
-                        ?>
-                        
-
-                    </div>
-                    <form id="addToCartForm" method="get">
-                        <input type="hidden" name="product_id" value="<?php echo $row_rec['product_id']; ?>">
-                        <input type="hidden" name="customer_id" value="<?php echo $customer_id; ?>">
-                        <?php if ($row_rec['stock'] == 0): ?>
-                            <button type="button" class="button-5 stock-out" disabled>Stock Out</button>
-                        <?php else: ?>
-                            <button type="button" class="button-5" onclick="addToCart(<?php echo $row_rec['product_id']; ?>, <?php echo $customer_id; ?>)">Add to cart</button>
-                        <?php endif; ?>
-
-                    </form>
-
+        <!-- Call to Action -->
+        <div class="border-t border-white/5 pt-6 mt-6">
+            <?php if ($row_p['stock'] == 0): ?>
+                <button type="button" class="btn btn-disabled btn-block" disabled>Out of Stock</button>
+            <?php else: ?>
+                <div class="flex gap-4">
+                    <button type="button" class="btn btn-primary bg-gradient-to-r from-primary to-secondary border-none hover:opacity-90 transition-all text-white flex-grow font-bold shadow-lg" 
+                            onclick="addToCart(<?= intval($product_id) ?>)">
+                        <i class="fa-solid fa-cart-plus mr-1"></i> Add to Cart
+                    </button>
+                    <button type="button" class="btn btn-outline btn-secondary" 
+                            onclick="addToWishlist(<?= intval($product_id) ?>)">
+                        <i class="fa-solid fa-heart"></i>
+                    </button>
                 </div>
-                <?php
-                        }
-                }
-                ?>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive Review/Rating and Others' Reviews -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+    <!-- Write a Review -->
+    <div class="lg:col-span-1 bg-base-200 border border-white/5 rounded-3xl p-6 shadow-xl flex flex-col justify-between">
+        <div>
+            <h2 class="text-xl font-bold mb-4">Rate & Review</h2>
+            
+            <!-- Dynamic Star Selection -->
+            <div class="form-control mb-4">
+                <label class="label"><span class="label-text font-semibold">Select Rating</span></label>
+                <div class="rating rating-md gap-1">
+                    <input type="radio" name="rating-star" class="mask mask-star-2 bg-orange-400" onclick="give_rating(1)" />
+                    <input type="radio" name="rating-star" class="mask mask-star-2 bg-orange-400" onclick="give_rating(2)" />
+                    <input type="radio" name="rating-star" class="mask mask-star-2 bg-orange-400" onclick="give_rating(3)" />
+                    <input type="radio" name="rating-star" class="mask mask-star-2 bg-orange-400" onclick="give_rating(4)" />
+                    <input type="radio" name="rating-star" class="mask mask-star-2 bg-orange-400" onclick="give_rating(5)" checked />
+                </div>
             </div>
-    </section>
-    <script>
-        function addToCart(x, y) {
-            console.log(y);
-            const varia = document.getElementById("cus");
-            let cid = varia.innerText;
-            fetch('actions/addtocart.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'product_id=' + x + '&customer_id=' + cid, // Added '&' to separate parameters
-            }).then(response => {
-                if (response.ok) {
-                    // If successful, display success notification
-                    showNotification('Item added to cart successfully', 'success');
-                } else {
-                    // If failed, display error notification
-                    showNotification('Failed to add item to cart', 'error');
-                }
-            }).catch(error => {
-                // If error occurs, display error notification
-                showNotification('Error: ' + error, 'error');
-            });
-        }
 
-        function addTowishlist(x, y) {
-            const varia = document.getElementById("cus");
-            let cid = varia.innerText;
+            <!-- Review Text -->
+            <div class="form-control mb-4">
+                <label class="label"><span class="label-text font-semibold">Your Review</span></label>
+                <textarea id="review_text" class="textarea textarea-bordered h-24 focus:outline-none focus:border-primary" placeholder="Tell others what you think of this product..."></textarea>
+            </div>
+        </div>
 
-            fetch('actions/addtowishlist.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'product_id=' + x + '&customer_id=' + cid,
-            }).then(response => {
-                if (response.ok) {
-                    // If successful, display success notification
-                    showNotification('Item added to wishlist successfully', 'success');
-                } else {
-                    // If failed, display error notification
-                    showNotification('Failed to add item to wishlist', 'error');
-                }
-            }).catch(error => {
-                // If error occurs, display error notification
-                showNotification('Error: ' + error, 'error');
-            });
-        }
-        function give_rating(rating) {
-            console.log('Rating given: ' + rating);
-            const varia_p = document.getElementById("prod");
-            let pid = varia_p.innerText;
-            console.log(pid);
+        <button type="button" class="btn btn-secondary btn-block font-bold mt-2" onclick="submitReview()">
+            Submit Review
+        </button>
+    </div>
 
-            fetch('actions/give_rating.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'product_id=' + pid + '&rating=' + rating,
-            }).then(response => {
-                if (response.ok) {
-                    // If successful, display success notification
-                    showNotification('Rating given', 'success');
-                    setTimeout(function() {
-                window.location.reload();
-            }, 2000);
+    <!-- Others' Reviews -->
+    <div class="lg:col-span-2 bg-base-200 border border-white/5 rounded-3xl p-6 shadow-xl">
+        <h2 class="text-xl font-bold mb-4 border-b border-white/5 pb-2">Customer Reviews (<?= count($reviews) ?>)</h2>
+        <div class="space-y-4 max-h-[300px] overflow-y-auto pr-2">
+            <?php if (empty($reviews)): ?>
+                <div class="text-center py-12">
+                    <span class="text-4xl opacity-35"><i class="fa-regular fa-comment-dots"></i></span>
+                    <p class="text-base-content/50 mt-2 text-sm">No reviews yet. Be the first to share your thoughts!</p>
+                </div>
+            <?php else: ?>
+                <?php foreach ($reviews as $row_r): ?>
+                    <div class="bg-base-300/50 p-4 rounded-2xl border border-white/5">
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
+                                <?= strtoupper(substr($row_r['Cname'], 0, 2)) ?>
+                            </div>
+                            <span class="font-bold text-sm text-base-content"><?= htmlspecialchars($row_r['Cname']) ?></span>
+                            <span class="badge badge-ghost badge-sm opacity-60">Verified Purchase</span>
+                        </div>
+                        <p class="text-sm text-base-content/85 leading-relaxed"><?= htmlspecialchars($row_r['user_review']) ?></p>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<!-- Recommendations section -->
+<?php
+    // Collaborative filtering SQL query
+    $sql_rec = "
+        SELECT p.*, COUNT(*) as co_occurrence
+        FROM (
+            SELECT customer_id FROM wishlist WHERE product_id = :pid
+            UNION
+            SELECT customer_id FROM adds WHERE product_id = :pid
+        ) as users_with_this_item
+        JOIN (
+            SELECT customer_id, product_id FROM wishlist WHERE product_id != :pid
+            UNION
+            SELECT customer_id, product_id FROM adds WHERE product_id != :pid
+        ) as other_items ON users_with_this_item.customer_id = other_items.customer_id
+        JOIN product p ON other_items.product_id = p.product_id
+        WHERE p.category = :category
+        GROUP BY p.product_id
+        ORDER BY co_occurrence DESC, p.rating DESC
+        LIMIT 4
+    ";
+    
+    $stmt_rec = $conn->prepare($sql_rec);
+    $stmt_rec->bindValue(':pid', $product_id, PDO::PARAM_INT);
+    $stmt_rec->bindValue(':category', $row_p['category'], PDO::PARAM_STR);
+    $stmt_rec->execute();
+    $recommendations = $stmt_rec->fetchAll();
+    
+    // Fill up the recommendation list if it's less than 4 items
+    if (count($recommendations) < 4) {
+        $needed = 4 - count($recommendations);
+        $exclude_ids = array_merge([$product_id], array_column($recommendations, 'product_id'));
+        $in_clause = implode(',', array_fill(0, count($exclude_ids), '?'));
+        
+        $sql_fallback = "
+            SELECT * FROM product 
+            WHERE category = ? AND product_id NOT IN ($in_clause) 
+            ORDER BY rating DESC, stock DESC 
+            LIMIT ?
+        ";
+        
+        $stmt_fallback = $conn->prepare($sql_fallback);
+        $params = array_merge([$row_p['category']], $exclude_ids, [$needed]);
+        $stmt_fallback->execute($params);
+        $fallbacks = $stmt_fallback->fetchAll();
+        $recommendations = array_merge($recommendations, $fallbacks);
+    }
+?>
+
+<section class="mb-12">
+    <div class="flex flex-col md:flex-row justify-between items-baseline mb-6 gap-4 border-b border-white/5 pb-3">
+        <div>
+            <h2 class="text-2xl font-extrabold tracking-tight">Products You May Also Like</h2>
+            <p class="text-xs text-base-content/50 mt-1">Based on interactions from users interested in this item</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <?php foreach ($recommendations as $row_rec): ?>
+            <div class="card bg-base-200 border border-white/5 hover:border-primary/20 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group">
+                <div>
+                    <!-- Product Image -->
+                    <div class="relative overflow-hidden aspect-square bg-base-300 rounded-t-2xl flex items-center justify-center">
+                        <a href="product_page.php?customer=<?= urlencode($userid) ?>&product=<?= urlencode($row_rec['product_id']) ?>" class="w-full h-full flex items-center justify-center">
+                            <img src="<?= htmlspecialchars($row_rec['image']) ?>" alt="<?= htmlspecialchars($row_rec['Pname']) ?>" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
+                        </a>
+                        <div class="absolute top-3 left-3 bg-base-900/80 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-md border border-white/5">
+                            <span class="text-warning"><i class="fa-solid fa-star"></i></span>
+                            <span><?= htmlspecialchars($row_rec['rating']) ?></span>
+                        </div>
+                        <button class="absolute top-3 right-3 btn btn-circle btn-sm btn-ghost bg-base-900/80 backdrop-blur-md border border-white/5 hover:bg-primary hover:text-white transition-colors shadow-md" 
+                                onclick="addToWishlist(<?= intval($row_rec['product_id']) ?>)">
+                            <i class="fa-solid fa-heart"></i>
+                        </button>
+                    </div>
+
+                    <!-- Product Details -->
+                    <div class="p-5">
+                        <?php 
+                        $rec_pid = $row_rec['product_id'];
+                        $rec_discount_stmt = $conn->prepare("SELECT * FROM discount WHERE product_id = ?");
+                        $rec_discount_stmt->execute([$rec_pid]);
+                        $rec_discount_row = $rec_discount_stmt->fetch();
+                        if ($rec_discount_row): 
+                            $discount_value = $rec_discount_row['percentage'];
+                            $new_price = $row_rec['price'] - ($row_rec['price'] * ($discount_value / 100));               
+                        ?>
+                            <div class="badge badge-error gap-1 mb-2 text-xs font-bold py-2 px-2.5">
+                                <i class="fa-solid fa-tag"></i> <?= htmlspecialchars($discount_value) ?>% OFF
+                            </div>
+                            <h3 class="font-bold text-lg leading-tight group-hover:text-primary transition-colors line-clamp-1"><?= htmlspecialchars($row_rec['Pname']) ?></h3>
+                            <div class="flex items-baseline gap-2 mt-2">
+                                <span class="text-xl font-extrabold text-error">৳<?= number_format($new_price, 2) ?></span>
+                                <span class="text-sm line-through opacity-50">৳<?= number_format($row_rec['price'], 2) ?></span>
+                            </div>
+                        <?php else: 
+                            $new_price = $row_rec['price'];
+                        ?>
+                            <div class="h-6"></div>
+                            <h3 class="font-bold text-lg leading-tight group-hover:text-primary transition-colors line-clamp-1"><?= htmlspecialchars($row_rec['Pname']) ?></h3>
+                            <div class="flex items-baseline mt-2">
+                                <span class="text-xl font-extrabold text-primary">৳<?= number_format($new_price, 2) ?></span>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- Product Action Footer -->
+                <div class="p-5 pt-0">
+                    <?php if ($row_rec['stock'] == 0): ?>
+                        <button type="button" class="btn btn-disabled btn-block btn-sm text-xs font-bold" disabled>Out of Stock</button>
+                    <?php else: ?>
+                        <button type="button" class="btn btn-primary bg-gradient-to-r from-primary to-secondary border-none hover:opacity-90 transition-all text-white btn-block btn-sm font-bold shadow-md" 
+                                onclick="addToCart(<?= intval($row_rec['product_id']) ?>)">
+                            <i class="fa-solid fa-cart-plus mr-1"></i> Add to Cart
+                        </button>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</section>
+
+<script>
+function addToCart(productId) {
+    const formData = new URLSearchParams();
+    formData.append('product_id', productId);
+    formData.append('customer_id', '<?= $userid ?>');
+
+    fetch('actions/addtocart.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData.toString()
+    })
+    .then(response => {
+        if (response.ok) {
+            showNotification('Added to cart successfully!', 'success');
         } else {
-            // If failed, display error notification
-            showNotification('Failed to submit rating', 'error');
+            showNotification('Failed to add to cart.', 'error');
         }
-    }).catch(error => {
-        // If error occurs, display error notification
-        showNotification('Error: ' + error, 'error');
+    })
+    .catch(error => {
+        showNotification('Error adding to cart: ' + error, 'error');
     });
 }
-        function give_review() {
-            const varia = document.getElementById("cus");
-            let cid = varia.innerText;
-            var reviewText = document.getElementById("review_text").value;
-            console.log('Review given: ' + reviewText);
-            console.log(cid);
-            fetch('actions/give_review.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'product_id=<?php echo $product_id; ?>' + '&customer_id=' + cid + '&review=' + reviewText,
-            }).then(response => {
-                if (response.ok) {
-                    // If successful, display success notification
-                    showNotification('Review posted', 'success');
-                } else {
-                    // If failed, display error notification
-                    showNotification('Failed to submit rating', 'error');
-                }
-            }).catch(error => {
-                // If error occurs, display error notification
-                showNotification('Error: ' + error, 'error');
-            });
+
+function addToWishlist(productId) {
+    const formData = new URLSearchParams();
+    formData.append('product_id', productId);
+    formData.append('customer_id', '<?= $userid ?>');
+
+    fetch('actions/addtowishlist.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData.toString()
+    })
+    .then(response => {
+        if (response.ok) {
+            showNotification('Added to wishlist successfully!', 'success');
+        } else {
+            showNotification('Failed to add to wishlist.', 'error');
         }
-        function showNotification(message, type, success) {
-            // Remove any existing notification
-            const existingNotification = document.querySelector('.notification.visible');
-            if (existingNotification) {
-                existingNotification.remove();
-            }
+    })
+    .catch(error => {
+        showNotification('Error adding to wishlist: ' + error, 'error');
+    });
+}
 
-            // Create new notification
-            const notification = document.createElement('div');
-            notification.classList.add('notification', type);
-            notification.textContent = message;
+function give_rating(rating) {
+    const formData = new URLSearchParams();
+    formData.append('product_id', '<?= $product_id ?>');
+    formData.append('rating', rating);
 
-            // Append the notification to the body
-            document.body.appendChild(notification);
-
-            // Trigger reflow to apply transition
-            void notification.offsetWidth;
-
-            // Add visible class to start fade in transition
-            notification.classList.add('visible');
-
-            // Remove the notification after 3 seconds
-            setTimeout(() => {
-                // Start fade out transition
-                notification.classList.remove('visible');
-                // Remove the notification from the DOM after transition ends
-                setTimeout(() => {
-                    notification.remove();
-                }, 500); // Transition duration
-            }, 1000); // Notification duration
+    fetch('actions/give_rating.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData.toString()
+    })
+    .then(response => {
+        if (response.ok) {
+            showNotification('Rating submitted successfully!', 'success');
+            setTimeout(function() {
+                window.location.reload();
+            }, 1000);
+        } else {
+            showNotification('Failed to submit rating.', 'error');
         }
-    </script>
-</body>
-</html>
+    })
+    .catch(error => {
+        showNotification('Error submitting rating: ' + error, 'error');
+    });
+}
+
+function submitReview() {
+    const reviewText = document.getElementById('review_text').value.trim();
+    if (!reviewText) {
+        showNotification('Please enter a review first.', 'error');
+        return;
+    }
+
+    const formData = new URLSearchParams();
+    formData.append('product_id', '<?= $product_id ?>');
+    formData.append('customer_id', '<?= $userid ?>');
+    formData.append('review', reviewText);
+
+    fetch('actions/give_review.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData.toString()
+    })
+    .then(response => {
+        if (response.ok) {
+            showNotification('Review submitted successfully!', 'success');
+            document.getElementById('review_text').value = '';
+            setTimeout(function() {
+                window.location.reload();
+            }, 1000);
+        } else {
+            showNotification('Failed to submit review.', 'error');
+        }
+    })
+    .catch(error => {
+        showNotification('Error submitting review: ' + error, 'error');
+    });
+}
+
+function showNotification(message, type) {
+    let toastContainer = document.getElementById('toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toast-container';
+        toastContainer.className = 'toast toast-top toast-end z-[9999]';
+        document.body.appendChild(toastContainer);
+    }
+    
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+    const icon = type === 'success' 
+        ? '<svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
+        : '<svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>';
+        
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert ${alertClass} shadow-lg py-2.5 transition-all duration-300 transform translate-x-full opacity-0`;
+    alertDiv.innerHTML = `
+        <div class="flex items-center gap-2">
+            ${icon}
+            <span class="text-sm font-semibold">${message}</span>
+        </div>
+    `;
+    
+    toastContainer.appendChild(alertDiv);
+    
+    setTimeout(() => {
+        alertDiv.classList.remove('translate-x-full', 'opacity-0');
+    }, 10);
+    
+    setTimeout(() => {
+        alertDiv.classList.add('translate-x-full', 'opacity-0');
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 300);
+    }, 3000);
+}
+</script>
+
+<?php include 'includes/footer.php'; ?>

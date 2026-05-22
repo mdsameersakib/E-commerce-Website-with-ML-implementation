@@ -1,27 +1,25 @@
 <?php
-// Include database connection file
 include '../includes/dbconnect.php';
 
-// Initialize $res_u variable
-// Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get product_id from the form
-    $new_pass = $_POST['new_password']; // Change $_GET to $_POST
-    
-    // Check if customer_id is received via query parameter
-    $customer_id = $_POST['customer_id']; // Change $_GET to $_POST
-    echo $customer_id;
-    // Debugging: Check if product_id and customer_id are received
-    // print_r($product_id);
-    // print_r($customer_id);
+    $new_pass = $_POST['new_password'] ?? '';
+    $customer_id = $_POST['customer_id'] ?? '';
 
-    // Insert data into the adds table
-    $sql = "UPDATE customer SET password = '$new_pass' WHERE customer_id = '$customer_id'";
-    $res = mysqli_query($conn, $sql); // Added semicolon at the end of the line
+    if (empty($new_pass) || empty($customer_id)) {
+        echo "Error: Missing required parameters.";
+        exit();
+    }
+
+    // Secure password hashing
+    $hashed_password = password_hash($new_pass, PASSWORD_BCRYPT);
+
+    $stmt = $conn->prepare("UPDATE customer SET password = ? WHERE customer_id = ?");
+    $res = $stmt->execute([$hashed_password, $customer_id]);
+    
     if ($res) {
         echo "Data inserted successfully";
     } else {
-        echo "Error inserting data: " . mysqli_error($conn);
+        echo "Error updating password";
     }
 }
 ?>

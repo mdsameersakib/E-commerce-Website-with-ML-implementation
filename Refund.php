@@ -1,170 +1,210 @@
 <?php
-
-    // Include database connection file
+    $page_title = "ShopSphere - Refund Request";
+    include 'includes/header.php';
     include 'includes/dbconnect.php';
-     // Exclude products with order_id assigned
-    $customer_id = $_GET['customer'];
 
+    $customer_id = $_SESSION['userid'] ?? $_GET['customer'] ?? '';
+    $product_id = $_GET['product_id'] ?? '';
+    $order_id = $_GET['order_id'] ?? '';
+    $product_name = $_GET['product_name'] ?? 'Product';
 ?>
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Refund</title>
-    <link rel="stylesheet" href="css/menustyle.css">
-    <script src="https://kit.fontawesome.com/d3eca7cd97.js" crossorigin="anonymous"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap"
-        rel="stylesheet">
-
-</head>
-
-<body>
-    <section class="body">
-        <header class="header">
-            <div class="logo">
-                <span class="logotext"><i class="fa-solid fa-holly-berry"></i></span>
+<div class="max-w-xl mx-auto my-8">
+    <div class="card bg-base-200 border border-white/5 shadow-2xl rounded-3xl overflow-hidden">
+        <div class="p-6 md:p-8 space-y-6">
+            <div>
+                <h1 class="text-2xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Request a Refund</h1>
+                <p class="text-sm text-base-content/50 mt-1">Please provide the details below to request a refund for <strong><?= htmlspecialchars($product_name) ?></strong> (Order #<?= htmlspecialchars($order_id) ?>).</p>
             </div>
+            
+            <div class="divider my-0"></div>
 
-            <div class="menu_icon">
-                <i class="fa-solid fa-bars"></i>
-            </div>
-
-            <nav class="navbar">
-                <a href="menu.php?userid=<?php echo  $customer_id; ?>">Menu</a>
-                
-                <div class="dropdown">
-                    <a href="">Categories</a>
-                    <div class="dropdown-content">
-                      <a href="categories/category_electronics.php?userid=<?php echo  $customer_id; ?>">Electronics</a>
-                      <a href="categories/category_accessories.php?userid=<?php echo  $customer_id; ?>">Accessories</a>
-                      <a href="categories/category_clothes.php?userid=<?php echo  $customer_id; ?>">Clothes</a>
-                      <a href="categories/category_stationery.php?userid=<?php echo  $customer_id; ?>">Stationery</a>
-                      <a href="categories/category_selfcare.php?userid=<?php echo  $customer_id; ?>">Self Care</a>
-                      <a href="categories/category_healthcare.php?userid=<?php echo  $customer_id; ?>">Health Care</a>
-                      <a href="categories/category_food.php?userid=<?php echo  $customer_id; ?>">Food Items</a>
-                      <a href="categories/category_household.php?userid=<?php echo  $customer_id; ?>">Household</a>
-                    </div>
-                  </div>
-            </nav>
-
-            <div class="nav_icon">
-                <a href="wishlist.php?customer=<?php echo $customer_id; ?>"><i class="fa-solid fa-heart"></i></a>
-                <a href="cart.php?customer=<?php echo $customer_id; ?>"><i class="fa-solid fa-cart-shopping"></i></a>
-                <a href="profile.php?customer=<?php echo $customer_id; ?>"><i class="fa-solid fa-user"></i></a>
-            </div>
-        </header>
-        <div class="cart-container">
-            <div class="gap"></div>
-            <h1 class="title">Upload image of the product</h1>
-            <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-            <main class="main_full">
-                <div class="container2">
-                    <div class="panel">
-                        <div class="button_outer">
-                            <div class="btn_upload">
-                                <input type="file" id="upload_file" name="">
-                                Upload Image
-                            </div>
-                            <div class="processing_bar"></div>
-                            <div class="success_box"></div>
-                        </div>
-                    </div>
-                    <div class="error_msg"></div>
-                    <div class="uploaded_file_view" id="uploaded_view">
-                        <span class="file_remove">X</span>
-                    </div>
+            <div id="refund-alert" class="alert hidden shadow-lg mb-4">
+                <div>
+                    <span id="refund-alert-text"></span>
                 </div>
-                <div ><h1 class="title">Cause of refund</h1></div>
-                <div><textarea class="refund_text" name="" id="" cols="100" rows="10"></textarea></div>
-                <div style="width: 10%; margin: auto;"><button class="button-5" >Submit</button></div>
-                <div class="gap"></div>
+            </div>
+
+            <!-- Drag & Drop / Upload Box -->
+            <div class="form-control w-full">
+                <label class="label font-bold text-xs uppercase tracking-wider text-base-content/75">
+                    <span>Product Image</span>
+                </label>
+                <div id="drop-zone" class="border-2 border-dashed border-white/10 hover:border-primary/50 transition-all rounded-2xl p-8 flex flex-col items-center justify-center cursor-pointer bg-base-300/30 group">
+                    <input type="file" id="upload_file" class="hidden" accept="image/*">
+                    <div id="upload-icon" class="text-4xl text-base-content/30 group-hover:text-primary transition-colors mb-3">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                    </div>
+                    <p class="text-sm font-medium text-base-content/75 text-center" id="upload-prompt">Drag & drop your product image here, or <span class="text-primary hover:underline">browse</span></p>
+                    <p class="text-xs text-base-content/40 mt-1">Supports JPG, PNG, WEBP (Max 2MB)</p>
+                </div>
                 
-            </main>
+                <!-- Image Preview Area -->
+                <div id="preview-container" class="hidden mt-4 relative w-full h-48 rounded-2xl overflow-hidden border border-white/5 bg-base-300">
+                    <img id="image-preview" src="" alt="Preview" class="object-contain w-full h-full">
+                    <button type="button" id="remove-btn" class="btn btn-circle btn-error btn-xs absolute top-2 right-2 shadow-lg">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
 
+            <!-- Refund Reason Textarea -->
+            <div class="form-control w-full">
+                <label class="label font-bold text-xs uppercase tracking-wider text-base-content/75">
+                    <span>Reason for refund</span>
+                </label>
+                <textarea id="refund_reason" class="textarea textarea-bordered h-32 rounded-2xl bg-base-300/30 focus:border-primary focus:outline-none placeholder-base-content/30" placeholder="Please describe why you are requesting a refund in detail..."></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="card-actions justify-end mt-4">
+                <a href="orderlist.php?customer=<?= urlencode($customer_id) ?>" class="btn btn-ghost rounded-2xl px-6">Cancel</a>
+                <button type="button" id="submit-refund-btn" class="btn btn-primary bg-gradient-to-r from-primary to-secondary border-none hover:opacity-90 text-white font-bold rounded-2xl px-8 shadow-lg">
+                    Submit Request
+                </button>
+            </div>
         </div>
+    </div>
+</div>
 
-    </section>
-    <script>
-   $(document).ready(function() {
-    var btnUpload = $("#upload_file"),
-        btnOuter = $(".button_outer");
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    const dropZone = $('#drop-zone');
+    const fileInput = $('#upload_file');
+    const previewContainer = $('#preview-container');
+    const imagePreview = $('#image-preview');
+    const removeBtn = $('#remove-btn');
+    const uploadPrompt = $('#upload-prompt');
+    const uploadIcon = $('#upload-icon');
+    
+    // Drag & Drop event handlers
+    dropZone.on('click', function() {
+        fileInput.click();
+    });
 
-    // Function to handle image upload
-    btnUpload.on("change", function(e) {
-        var ext = btnUpload.val().split('.').pop().toLowerCase();
-        if ($.inArray(ext, ['gif', 'png', 'jpg', 'jpeg']) == -1) {
-            $(".error_msg").text("Not an Image...");
-        } else {
-            $(".error_msg").text("");
-            btnOuter.addClass("file_uploading");
-            setTimeout(function() {
-                btnOuter.addClass("file_uploaded");
-            }, 3000);
-            var reader = new FileReader(); // Create a FileReader object
-            reader.onload = function(event) {
-                var uploadedFile = event.target.result; // Get the data URL
-                setTimeout(function() {
-                    $("#uploaded_view").append('<img src="' + uploadedFile + '" />').addClass("show");
-                }, 500);
-            };
-            reader.readAsDataURL(e.target.files[0]); // Read the file as data URL
+    dropZone.on('dragover', function(e) {
+        e.preventDefault();
+        dropZone.addClass('border-primary bg-base-300/60');
+    });
+
+    dropZone.on('dragleave', function() {
+        dropZone.removeClass('border-primary bg-base-300/60');
+    });
+
+    dropZone.on('drop', function(e) {
+        e.preventDefault();
+        dropZone.removeClass('border-primary bg-base-300/60');
+        const files = e.originalEvent.dataTransfer.files;
+        if (files.length) {
+            handleFileSelect(files[0]);
         }
     });
 
-    // Function to handle removing uploaded image
-    $(".file_remove").on("click", function(e) {
-        $("#uploaded_view").removeClass("show");
-        $("#uploaded_view").find("img").remove();
-        btnOuter.removeClass("file_uploading");
-        btnOuter.removeClass("file_uploaded");
+    fileInput.on('change', function() {
+        if (this.files.length) {
+            handleFileSelect(this.files[0]);
+        }
     });
 
-    // Function to handle form submission
-    $(".button-5").on("click", function() {
+    function handleFileSelect(file) {
+        // Validate local file type
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            showAlert('error', 'Only JPG, PNG, and WEBP formats are supported.');
+            return;
+        }
 
-        var product_id = "<?php echo $_GET['product_id']; ?>"; 
-        var order_id ="<?php echo $_GET['order_id']; ?>"; 
-        var customer_id = "<?php echo $customer_id; ?>"; 
-        var reason = $(".refund_text").val(); 
-        var fileInput = $("#upload_file")[0].files[0]; // Get the file from the file input
-        var formData = new FormData(); // Create FormData object // Append other form data
-        formData.append('product_id', product_id); // Append other form data
-        formData.append('customer_id', customer_id);
-        formData.append('reason', reason);
-        formData.append('order_id', order_id);
-        // Convert the image file to a Blob
-        var reader = new FileReader();
-        reader.onload = function(event) {
-            var blob = new Blob([event.target.result], { type: fileInput.type });
-            formData.append('img', blob, fileInput.name); // Append the Blob
-            // Send data to another PHP file using AJAX
-            $.ajax({
-                url: 'actions/process_refund.php',
-                type: 'POST',
-                data: formData, // Use FormData object
-                contentType: false, // Set contentType to false when sending FormData
-                processData: false, // Set processData to false when sending FormData
-                success: function(response) {
-                    // Handle success response
-                    alert(response); // Example: Display response from process_refund.php
-                },
-                error: function(xhr, status, error) {
-                    // Handle error
-                    console.error(xhr.responseText);
-                }
-            });
+        // Validate local file size (2MB)
+        if (file.size > 2 * 1024 * 1024) {
+            showAlert('error', 'Image size must be smaller than 2MB.');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            imagePreview.attr('src', e.target.result);
+            dropZone.addClass('hidden');
+            previewContainer.removeClass('hidden');
         };
-        reader.readAsArrayBuffer(fileInput); // Read the file as ArrayBuffer
+        reader.readAsDataURL(file);
+    }
+
+    removeBtn.on('click', function(e) {
+        e.stopPropagation();
+        fileInput.val('');
+        imagePreview.attr('src', '');
+        previewContainer.addClass('hidden');
+        dropZone.removeClass('hidden');
+    });
+
+    function showAlert(type, message) {
+        const alertBox = $('#refund-alert');
+        alertBox.removeClass('hidden alert-error alert-success alert-info');
+        
+        if (type === 'error') {
+            alertBox.addClass('alert-error');
+        } else if (type === 'success') {
+            alertBox.addClass('alert-success');
+        } else {
+            alertBox.addClass('alert-info');
+        }
+        
+        $('#refund-alert-text').html(message);
+        alertBox.get(0).scrollIntoView({ behavior: 'smooth' });
+    }
+
+    $('#submit-refund-btn').on('click', function() {
+        const productId = <?= json_encode($product_id); ?>;
+        const orderId = <?= json_encode($order_id); ?>;
+        const customerId = <?= json_encode($customer_id); ?>;
+        const reason = $('#refund_reason').val().trim();
+        const file = fileInput[0].files[0];
+
+        if (!file) {
+            showAlert('error', 'Please select or drag an image of the product.');
+            return;
+        }
+
+        if (!reason) {
+            showAlert('error', 'Please provide a reason for requesting a refund.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('product_id', productId);
+        formData.append('customer_id', customerId);
+        formData.append('reason', reason);
+        formData.append('order_id', orderId);
+        formData.append('img', file);
+
+        const btn = $(this);
+        btn.addClass('loading').prop('disabled', true);
+
+        $.ajax({
+            url: 'actions/process_refund.php',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                btn.removeClass('loading').prop('disabled', false);
+                if (response.indexOf('successfully') !== -1) {
+                    showAlert('success', 'Refund request submitted successfully! Redirecting...');
+                    setTimeout(function() {
+                        window.location.href = 'refund_list.php?customer=' + encodeURIComponent(customerId);
+                    }, 2000);
+                } else {
+                    showAlert('error', response);
+                }
+            },
+            error: function(xhr, status, error) {
+                btn.removeClass('loading').prop('disabled', false);
+                showAlert('error', 'Failed to submit request: ' + xhr.statusText);
+            }
+        });
     });
 });
-
-
 </script>
-</body>
 
-</html>
+<?php include 'includes/footer.php'; ?>

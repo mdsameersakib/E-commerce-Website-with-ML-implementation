@@ -1,194 +1,172 @@
 <?php
-    // Include database connection file
+    $page_title = "ShopSphere - My Wishlist";
+    include 'includes/header.php';
     include 'includes/dbconnect.php';
-    $sql = "SELECT * FROM customer c JOIN wishlist a ON c.customer_id = a.customer_id JOIN product p ON a.product_id = p.product_id WHERE c.customer_id =" . $_GET['customer'] ; // Exclude products with order_id assigned
-    $res_u = mysqli_query($conn, $sql);
-    $customer_id = $_GET['customer'];
+
+    // Prepare and execute using PDO
+    $stmt = $conn->prepare("SELECT c.customer_id, a.product_id, p.Pname, p.price, p.image FROM customer c JOIN wishlist a ON c.customer_id = a.customer_id JOIN product p ON a.product_id = p.product_id WHERE c.customer_id = ?");
+    $stmt->execute([$userid]);
+    $wishlist_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu page</title>
-    <link rel="stylesheet" href="css/menustyle.css">
-    <script src="https://kit.fontawesome.com/d3eca7cd97.js" crossorigin="anonymous"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap"
-        rel="stylesheet">
+<div class="flex flex-col md:flex-row justify-between items-baseline mb-8 gap-4 border-b border-white/5 pb-4">
+    <div>
+        <h1 class="text-3xl font-extrabold tracking-tight">My Wishlist</h1>
+        <p class="text-sm text-base-content/50 mt-1">Products you saved for later</p>
+    </div>
+    <div class="badge badge-outline badge-primary font-semibold py-3 px-4"><?= count($wishlist_items) ?> Items Saved</div>
+</div>
 
-</head>
-
-<body>
-    <section class="body">
-        <header class="header">
-            <div class="logo">
-            <span class="logotext"><i class="fa-solid fa-holly-berry"></i></span>
-            </div>
-
-            <div class="menu_icon">
-                <i class="fa-solid fa-bars"></i>
-            </div>
-
-            <nav class="navbar">
-                <a href="menu.php?userid=<?php echo $customer_id; ?>">Menu</a>
-                <div class="dropdown">
-                    <a href="">Categories</a>
-                    <div class="dropdown-content">
-                      <a href="categories/category_electronics.php?userid=<?php echo  $customer_id; ?>">Electronics</a>
-                      <a href="categories/category_accessories.php?userid=<?php echo  $customer_id; ?>">Accessories</a>
-                      <a href="categories/category_clothes.php?userid=<?php echo  $customer_id; ?>">Clothes</a>
-                      <a href="categories/category_stationery.php?userid=<?php echo  $customer_id; ?>">Stationery</a>
-                      <a href="categories/category_selfcare.php?userid=<?php echo  $customer_id; ?>">Self Care</a>
-                      <a href="categories/category_healthcare.php?userid=<?php echo  $customer_id; ?>">Health Care</a>
-                      <a href="categories/category_food.php?userid=<?php echo  $customer_id; ?>">Food Items</a>
-                      <a href="categories/category_household.php?userid=<?php echo  $customer_id; ?>">Household</a>
-                    </div>
-                  </div>
-            </nav>
-
-            <div class="nav_icon">
-                <i class="fa-solid fa-heart"></i>
-                <a href="cart.php?customer=<?php echo $customer_id; ?>"><i class="fa-solid fa-cart-shopping"></i></a>
-                <a href="profile.php?customer=<?php echo $customer_id; ?>"><i class="fa-solid fa-user"></i></a>
-            </div>
-        </header>
-        <div class="placeholderImg">
-        <div hidden id="cus">  <?php echo $customer_id ; ?></div>
+<div class="bg-base-200 border border-white/5 rounded-3xl p-6 shadow-xl mb-12">
+    <?php if (empty($wishlist_items)): ?>
+        <div class="text-center py-16">
+            <div class="text-6xl opacity-20 mb-4"><i class="fa-solid fa-heart-crack"></i></div>
+            <h2 class="text-xl font-bold text-base-content/60">Your wishlist is empty</h2>
+            <p class="text-sm text-base-content/40 mt-1 mb-8">Browse the store and click the heart icon on any product to save it here.</p>
+            <a href="menu.php?userid=<?= urlencode($userid) ?>" class="btn btn-primary bg-gradient-to-r from-primary to-secondary border-none hover:opacity-90 transition-all text-white font-bold px-8 shadow-lg">
+                Start Shopping
+            </a>
         </div>
+    <?php else: ?>
+        <div class="overflow-x-auto">
+            <table class="table w-full text-left align-middle">
+                <thead>
+                    <tr class="border-b border-white/5 text-base-content/75 text-sm">
+                        <th class="py-4">Product</th>
+                        <th class="py-4">Price</th>
+                        <th class="py-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($wishlist_items as $row_u): ?>
+                        <tr class="border-b border-white/5 hover:bg-base-300/40 transition-colors">
+                            <td class="py-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="avatar">
+                                        <div class="w-16 h-16 rounded-xl bg-base-300 flex items-center justify-center overflow-hidden border border-white/5">
+                                            <img src="<?= htmlspecialchars($row_u['image']) ?>" alt="<?= htmlspecialchars($row_u['Pname']) ?>" class="object-cover" />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <a href="product_page.php?customer=<?= urlencode($userid) ?>&product=<?= urlencode($row_u['product_id']) ?>" 
+                                           class="font-bold text-lg hover:text-primary transition-colors line-clamp-1">
+                                            <?= htmlspecialchars($row_u['Pname']) ?>
+                                        </a>
+                                        <span class="badge badge-sm badge-ghost opacity-65 mt-1">ID: #<?= str_pad($row_u['product_id'], 4, '0', STR_PAD_LEFT) ?></span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-4">
+                                <span class="font-extrabold text-lg text-primary">৳<?= number_format($row_u['price'], 2) ?></span>
+                            </td>
+                            <td class="py-4 text-right">
+                                <div class="flex justify-end gap-2">
+                                    <button class="btn btn-primary btn-sm bg-gradient-to-r from-primary to-secondary border-none hover:opacity-90 text-white font-bold px-4" 
+                                            onclick="addToCart(<?= intval($row_u['product_id']) ?>)">
+                                        <i class="fa-solid fa-cart-plus mr-1"></i> Add to Cart
+                                    </button>
+                                    <button class="btn btn-ghost btn-sm text-error hover:bg-error/10 btn-square" 
+                                            onclick="removeFromWishlist(<?= intval($row_u['product_id']) ?>)">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
+</div>
 
+<script>
+function addToCart(productId) {
+    const formData = new URLSearchParams();
+    formData.append('product_id', productId);
+    formData.append('customer_id', '<?= $userid ?>');
 
-        <section>
+    fetch('actions/addtocart.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData.toString()
+    })
+    .then(response => {
+        if (response.ok) {
+            showNotification('Item added to cart successfully!', 'success');
+        } else {
+            showNotification('Failed to add item to cart.', 'error');
+        }
+    })
+    .catch(error => {
+        showNotification('Error adding to cart: ' + error, 'error');
+    });
+}
 
-            <div class="cart-container">
-                <h1 class="cart_title">Wishlist</h1>
-                <div class="wish_header">
-                    <div>Image</div>
-                    <div>Product Name</div>
-                    <div>Unit price</div>
-                    <div>Action</div>
-                </div>
-                <!-- loop -->
-                <?php
-                if ($res_u) {
-                    while ($row_u = mysqli_fetch_assoc($res_u)) {
-                        $productId = $row_u['product_id'];
-                        $unitPrice = $row_u['price'];
-                ?>
-                <div class="wish_list">
-                <div><img src="<?php echo $row_u['image']; ?>" alt="<?php echo $row_u['Pname']; ?>"></div>
-                        <div><p class="product_name"><?php echo $row_u['Pname']; ?></p></div>
-                        <div><p id="unit_<?php echo $productId; ?>" class="price"><?php echo $unitPrice; ?></p></div>
-                    <form id="addToCartForm" method="get">
-                        <input type="hidden" name="product_id" value="<?php echo $row_u['product_id']; ?>">
-                        <input type="hidden" name="customer_id" value="<?php echo $row_u['customer_id']; ?>">
-                        
-                        <button type="button" class="button-5" onclick="addToCart(<?php echo $row_u['product_id']; ?>,<?php echo $customer_id; ?>)">Add to cart
-                        </button>
-                        <button type="button" class="button-6" onclick="removeFromWishlist(<?php echo $row_u['product_id']; ?>,<?php echo $customer_id;?>)">Remove
-                        </button>
-                    </form>
-                </div>
-                <?php
-                    }
-                } else {
-                    echo "No products in the cart.";
-                }
-                ?>
-            </div>
-            
+function removeFromWishlist(productId) {
+    const formData = new URLSearchParams();
+    formData.append('product_id', productId);
+    formData.append('customer_id', '<?= $userid ?>');
 
-
-
-        </section>
-
-
-    </section>
-    <script>
-            function addToCart(x, y) {
-                console.log(y);
-                const varia = document.getElementById("cus");
-                let cid = varia.innerText;
-                fetch('actions/addtocart.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: 'product_id=' + x + '&customer_id=' + cid, // Added '&' to separate parameters
-                }).then(response => {
-                    if (response.ok) {
-                        // If successful, display success notification
-                        showNotification('Item added to cart successfully', 'success');
-                    } else {
-                        // If failed, display error notification
-                        showNotification('Failed to add item to cart', 'error');
-                    }
-                }).catch(error => {
-                    // If error occurs, display error notification
-                    showNotification('Error: ' + error, 'error');
-                });
-            }
-            function removeFromWishlist(x,y){
-                console.log(y)
-                const varia = document.getElementById("cus");
-                let cid = varia.innerText;
-                fetch('actions/removefromwishlist.php', {
-
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: 'product_id=' + x + '&customer_id=' + cid, // Added '&' to separate parameters
-                }).then(response => {
-                    if (response.ok) {
-                        showNotification('Item deleted from wish successfully', 'success');
-                        
-                        refreshPage()
-                    } else {
-                        console.error('Failed to delete');
-                    }
-                }).catch(error => {
-                    console.error('Error:', error);
-                });
-            }
-            function refreshPage(){
+    fetch('actions/removefromwishlist.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData.toString()
+    })
+    .then(response => {
+        if (response.ok) {
+            showNotification('Item removed from wishlist.', 'success');
+            setTimeout(function() {
                 window.location.reload();
-            }
-            function showNotification(message, type) {
-                // Remove any existing notification
-                const existingNotification = document.querySelector('.notification.visible');
-                if (existingNotification) {
-                    existingNotification.remove();
-                }
+            }, 1000);
+        } else {
+            showNotification('Failed to remove item.', 'error');
+        }
+    })
+    .catch(error => {
+        showNotification('Error removing item: ' + error, 'error');
+    });
+}
 
-                // Create new notification
-                const notification = document.createElement('div');
-                notification.classList.add('notification', type);
-                notification.textContent = message;
+function showNotification(message, type) {
+    let toastContainer = document.getElementById('toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toast-container';
+        toastContainer.className = 'toast toast-top toast-end z-[9999]';
+        document.body.appendChild(toastContainer);
+    }
+    
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+    const icon = type === 'success' 
+        ? '<svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
+        : '<svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>';
+        
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert ${alertClass} shadow-lg py-2.5 transition-all duration-300 transform translate-x-full opacity-0`;
+    alertDiv.innerHTML = `
+        <div class="flex items-center gap-2">
+            ${icon}
+            <span class="text-sm font-semibold">${message}</span>
+        </div>
+    `;
+    
+    toastContainer.appendChild(alertDiv);
+    
+    setTimeout(() => {
+        alertDiv.classList.remove('translate-x-full', 'opacity-0');
+    }, 10);
+    
+    setTimeout(() => {
+        alertDiv.classList.add('translate-x-full', 'opacity-0');
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 300);
+    }, 3000);
+}
+</script>
 
-                // Append the notification to the body
-                document.body.appendChild(notification);
-
-                // Trigger reflow to apply transition
-                void notification.offsetWidth;
-
-                // Add visible class to start fade in transition
-                notification.classList.add('visible');
-
-                // Remove the notification after 3 seconds
-                setTimeout(() => {
-                    // Start fade out transition
-                    notification.classList.remove('visible');
-                    // Remove the notification from the DOM after transition ends
-                    setTimeout(() => {
-                        notification.remove();
-                    }, 500); // Transition duration
-                }, 1000); // Notification duration
-            }
-    </script>
-</body>
-
-</html>
+<?php include 'includes/footer.php'; ?>

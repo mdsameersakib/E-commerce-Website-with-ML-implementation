@@ -1,13 +1,15 @@
 <?php
     // Include database connection file
     include 'includes/dbconnect.php';
-    // Define your SQL query
-    $sql_u = "SELECT * FROM employee where employee_id=" .$_GET['userid'];
+    $userid = $_GET['userid'] ?? '';
 
-
-    // Execute the query
-    $res_u = mysqli_query($conn, $sql_u);
-    $row = mysqli_fetch_assoc($res_u);
+    // Prepare and execute using PDO
+    $stmt = $conn->prepare("SELECT * FROM employee WHERE employee_id = ?");
+    $stmt->execute([$userid]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        $row = ['Ename' => 'Guest'];
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">

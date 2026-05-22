@@ -1,222 +1,227 @@
 <?php
-    // Include database connection file
+    $page_title = "ShopSphere - My Profile";
+    include 'includes/header.php';
     include 'includes/dbconnect.php';
-    // Check if customer_id is set in the URL
-    if(isset($_GET['customer'])) {
-        $customer_id = $_GET['customer'];
 
-        // Retrieve customer data from the database
-        $sql_u = "SELECT * FROM customer WHERE customer_id = $customer_id";
-        $res_u = mysqli_query($conn, $sql_u);
-        $row_u = mysqli_fetch_assoc($res_u);
-    } else {
-        // Redirect to an error page or handle the absence of customer_id in URL
-        // For example:
-        // header("Location: error.php");
-        // exit();
+    // Retrieve customer data from the database using PDO
+    $stmt = $conn->prepare("SELECT * FROM customer WHERE customer_id = ?");
+    $stmt->execute([$userid]);
+    $row_u = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row_u) {
+        header("Location: login.php");
+        exit();
     }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu page</title>
-    <link rel="stylesheet" href="css/menustyle.css">
-    <script src="https://kit.fontawesome.com/d3eca7cd97.js" crossorigin="anonymous"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
-</head>
-<body>
-    <section class="body">
-        <header class="header">
-            <div class="logo">
-                <span class="logotext"><i class="fa-solid fa-holly-berry"></i></span>
+
+<div class="flex flex-col md:flex-row justify-between items-baseline mb-8 gap-4 border-b border-white/5 pb-4">
+    <div>
+        <h1 class="text-3xl font-extrabold tracking-tight">Account Settings</h1>
+        <p class="text-sm text-base-content/50 mt-1">Manage your profile details and preferences</p>
+    </div>
+    <div class="badge badge-outline badge-primary font-semibold py-3 px-4">User ID: #<?= str_pad($userid, 5, '0', STR_PAD_LEFT) ?></div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+    <!-- Left Column: Quick Actions & Stats -->
+    <div class="lg:col-span-1 flex flex-col gap-6">
+        <!-- Profile summary card -->
+        <div class="card bg-base-200 border border-white/5 shadow-xl p-6 rounded-3xl items-center text-center">
+            <div class="avatar mb-4">
+                <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-primary to-secondary text-primary-content flex items-center justify-center border-4 border-white/10">
+                    <span class="text-4xl font-extrabold"><?= strtoupper(substr($row_u['Cname'], 0, 2)) ?></span>
+                </div>
             </div>
-            <div class="menu_icon">
-                <i class="fa-solid fa-bars"></i>
+            <h2 class="text-2xl font-bold text-base-content"><?= htmlspecialchars($row_u['Cname']) ?></h2>
+            <p class="text-xs text-base-content/60 mt-1"><?= htmlspecialchars($row_u['email']) ?></p>
+            <div class="divider my-4"></div>
+            <div class="w-full flex flex-col gap-2">
+                <button class="btn btn-neutral btn-block justify-start gap-3 text-sm font-semibold" onclick="redirectToOrderList()">
+                    <i class="fa-solid fa-receipt text-primary"></i> Order History
+                </button>
+                <button class="btn btn-neutral btn-block justify-start gap-3 text-sm font-semibold" onclick="redirectToRefund()">
+                    <i class="fa-solid fa-rotate-left text-secondary"></i> Refund Requests
+                </button>
             </div>
-            <nav class="navbar">
-                <a href="menu.php?userid=<?php echo $customer_id; ?>">Menu</a>
-                <div class="dropdown">
-                    <a href="">Categories</a>
-                    <div class="dropdown-content">
-                      <a href="categories/category_electronics.php?userid=<?php echo  $customer_id; ?>">Electronics</a>
-                      <a href="categories/category_accessories.php?userid=<?php echo  $customer_id; ?>">Accessories</a>
-                      <a href="categories/category_clothes.php?userid=<?php echo  $customer_id; ?>">Clothes</a>
-                      <a href="categories/category_stationery.php?userid=<?php echo  $customer_id; ?>">Stationery</a>
-                      <a href="categories/category_selfcare.php?userid=<?php echo  $customer_id; ?>">Self Care</a>
-                      <a href="categories/category_healthcare.php?userid=<?php echo  $customer_id; ?>">Health Care</a>
-                      <a href="categories/category_food.php?userid=<?php echo  $customer_id; ?>">Food Items</a>
-                      <a href="categories/category_household.php?userid=<?php echo  $customer_id; ?>">Household</a>
-                    </div>
-                  </div>
-            </nav>
-            <div class="nav_icon">
-            <a href="wishlist.php?customer=<?php echo $customer_id; ?>"><i class="fa-solid fa-heart"></i></a>
-                <a href="cart.php?customer=<?php echo $customer_id; ?>"><i class="fa-solid fa-cart-shopping"></i></a>
-                <a href="profile.php?customer=<?php echo $customer_id; ?>"><i class="fa-solid fa-user"></i></a>
+        </div>
+    </div>
+
+    <!-- Right Column: Settings Form -->
+    <div class="lg:col-span-2 card bg-base-200 border border-white/5 shadow-xl p-6 md:p-8 rounded-3xl">
+        <h2 class="text-xl font-bold mb-6 border-b border-white/5 pb-2">Profile Details</h2>
+        
+        <div class="space-y-6">
+            <!-- Update Name -->
+            <div class="form-control">
+                <label class="label"><span class="label-text font-semibold">Display Name</span></label>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input id="nameInput" type="text" value="<?= htmlspecialchars($row_u['Cname']) ?>" class="input input-bordered flex-grow focus:outline-none focus:border-primary" />
+                    <button class="btn btn-primary bg-gradient-to-r from-primary to-secondary border-none text-white font-bold px-6 shadow-md" onclick="update_name()">Update</button>
+                </div>
             </div>
-        </header>
-        <div class="gap"></div>
-        <div hidden id="cus">  <?php echo $customer_id ; ?></div>
-        <section class="profile_box">
-            <h1 class="title">User ID: <span class="Cusername"><?php echo $customer_id; ?></span></h1>
-            <hr>
-             <form id="profileForm" class="profile" onsubmit="return false;">
-                <div>
-                    <span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspName:</span>
-                    <input id="nameInput" class="box2" type="text" placeholder="<?php echo $row_u['Cname']?>">
-                    <button class="button-5" onclick="update_name(<?php echo $customer_id; ?>)">Update</button>
-                </div>
-                <div>
-                    <span>Password:</span>
-                    <input id="passInput" class="box2" type="text" placeholder="<?php echo $row_u['password']?>">
-                    <button class="button-5"onclick="update_password(<?php echo $customer_id; ?>)">Update</button>
-                </div>
-                <div>
-                    <span>&nbsp&nbsp&nbspAddress:</span>
-                    <input id="addressInput" class="box2" type="text" placeholder="<?php echo $row_u['address']?>">
-                    <button class="button-5"onclick="update_address(<?php echo $customer_id; ?>)">Update</button>
-                </div>
-                <div class="gap"></div>
-                <div style="display: flex; justify-content: space-around;">
-                    <button class="button-7"  style="color:black;" onclick="redirectToOrderList()">Order History</button>
-                    <button class="button-7" style="color:black;" onclick="redirectToRefund()">Refund Requests</button>
-                </div>
-            </form>
-        </section>
-    </section>
-    <script>
-        function update_name(customer_id) {
-            const varia = document.getElementById("cus");
-            let cid = varia.innerText
-            var nameInputValue = document.getElementById("nameInput").value;
-            console.log("Name input value:", nameInputValue);
-            console.log("Customer ID:", cid);
-            // Here you can add AJAX request to update the name in the database
-            fetch('actions/updateName.php', {
 
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'new_name=' + nameInputValue + '&customer_id=' + cid, // Added '&' to separate parameters
-            }).then(response => {
-                    if (response.ok) {
-                        showNotification('Name Changed', 'success');
-                        sleep(1000).then(() => { refreshPage(); });
-                    } else {
-                        console.error('Fail');
-                    }
-                }).catch(error => {
-                    console.error('Error:', error);
-                });
-        }
-        function update_password(customer_id) {
-            const varia = document.getElementById("cus");
-            let cid = varia.innerText
-            var nameInputValue = document.getElementById("passInput").value;
-            console.log("Name input value:", nameInputValue);
-            console.log("Customer ID:", cid);
-            // Here you can add AJAX request to update the name in the database
-            fetch('actions/updatePass.php', {
+            <!-- Update Password -->
+            <div class="form-control">
+                <label class="label"><span class="label-text font-semibold">Change Password</span></label>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input id="passInput" type="password" placeholder="Enter new password" class="input input-bordered flex-grow focus:outline-none focus:border-primary" />
+                    <button class="btn btn-primary bg-gradient-to-r from-primary to-secondary border-none text-white font-bold px-6 shadow-md" onclick="update_password()">Update</button>
+                </div>
+            </div>
 
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'new_password=' + nameInputValue + '&customer_id=' + cid, // Added '&' to separate parameters
-            }).then(response => {
-                    if (response.ok) {
-                        showNotification('Password Changed', 'success');
-                        sleep(1000).then(() => { refreshPage(); });
-                  
-                    } else {
-                        console.error('Fail');
-                    }
-                }).catch(error => {
-                    console.error('Error:', error);
-                });
-        }
-        function update_address(customer_id) {
-            const varia = document.getElementById("cus");
-            let cid = varia.innerText
-            var nameInputValue = document.getElementById("addressInput").value;
-            console.log("Name input value:", nameInputValue);
-            console.log("Customer ID:", cid);
-            // Here you can add AJAX request to update the name in the database
-            fetch('actions/updateAddress.php', {
+            <!-- Update Address -->
+            <div class="form-control">
+                <label class="label"><span class="label-text font-semibold">Delivery Address</span></label>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input id="addressInput" type="text" value="<?= htmlspecialchars($row_u['address']) ?>" class="input input-bordered flex-grow focus:outline-none focus:border-primary" />
+                    <button class="btn btn-primary bg-gradient-to-r from-primary to-secondary border-none text-white font-bold px-6 shadow-md" onclick="update_address()">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'new_address=' + nameInputValue + '&customer_id=' + cid, // Added '&' to separate parameters
-            }).then(response => {
-                    if (response.ok) {
-                        showNotification('Address Changed', 'success');
-                        sleep(1000).then(() => { refreshPage(); });
+<script>
+function update_name() {
+    const nameVal = document.getElementById("nameInput").value.trim();
+    if (!nameVal) {
+        showNotification('Name cannot be empty.', 'error');
+        return;
+    }
 
-                    } else {
-                        console.error('Fail');
-                    }
-                }).catch(error => {
-                    console.error('Error:', error);
-                });
-        }
-        function refreshPage(){
+    const formData = new URLSearchParams();
+    formData.append('new_name', nameVal);
+    formData.append('customer_id', '<?= $userid ?>');
+
+    fetch('actions/updateName.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData.toString()
+    })
+    .then(response => {
+        if (response.ok) {
+            showNotification('Name updated successfully!', 'success');
+            setTimeout(function() {
                 window.location.reload();
-            }
-        function showNotification(message, type) {
-            // Remove any existing notification
-            const existingNotification = document.querySelector('.notification.visible');
-            if (existingNotification) {
-                existingNotification.remove();
-            }
-
-            // Create new notification
-            const notification = document.createElement('div');
-            notification.classList.add('notification', type);
-            notification.textContent = message;
-
-            // Append the notification to the body
-            document.body.appendChild(notification);
-
-            // Trigger reflow to apply transition
-            void notification.offsetWidth;
-
-            // Add visible class to start fade in transition
-            notification.classList.add('visible');
-
-            // Remove the notification after 3 seconds
-            setTimeout(() => {
-                // Start fade out transition
-                notification.classList.remove('visible');
-                // Remove the notification from the DOM after transition ends
-                setTimeout(() => {
-                    notification.remove();
-                }, 500); // Transition duration
-            }, 1000); // Notification duration
+            }, 1000);
+        } else {
+            showNotification('Failed to update name.', 'error');
         }
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-        function redirectToOrderList() {
-        // Retrieve customer ID from the hidden element
-        const customerId = document.getElementById("cus").innerText;
+    })
+    .catch(error => {
+        showNotification('Error: ' + error, 'error');
+    });
+}
 
-        // Redirect to orderlist.php with customer ID as a query parameter
-        window.location.href = `orderlist.php?customer=${customerId}`;
-        }
-        function redirectToRefund() {
-        // Retrieve customer ID from the hidden element
-        const customerId = document.getElementById("cus").innerText;
+function update_password() {
+    const passVal = document.getElementById("passInput").value;
+    if (!passVal) {
+        showNotification('Password cannot be empty.', 'error');
+        return;
+    }
 
-        // Redirect to orderlist.php with customer ID as a query parameter
-        window.location.href = `refund_list.php?customer=${customerId}`;
+    const formData = new URLSearchParams();
+    formData.append('new_password', passVal);
+    formData.append('customer_id', '<?= $userid ?>');
+
+    fetch('actions/updatePass.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData.toString()
+    })
+    .then(response => {
+        if (response.ok) {
+            showNotification('Password updated successfully!', 'success');
+            document.getElementById("passInput").value = '';
+        } else {
+            showNotification('Failed to update password.', 'error');
         }
-    </script>
-</body>
-</html>
+    })
+    .catch(error => {
+        showNotification('Error: ' + error, 'error');
+    });
+}
+
+function update_address() {
+    const addressVal = document.getElementById("addressInput").value.trim();
+    if (!addressVal) {
+        showNotification('Address cannot be empty.', 'error');
+        return;
+    }
+
+    const formData = new URLSearchParams();
+    formData.append('new_address', addressVal);
+    formData.append('customer_id', '<?= $userid ?>');
+
+    fetch('actions/updateAddress.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData.toString()
+    })
+    .then(response => {
+        if (response.ok) {
+            showNotification('Address updated successfully!', 'success');
+            setTimeout(function() {
+                window.location.reload();
+            }, 1000);
+        } else {
+            showNotification('Failed to update address.', 'error');
+        }
+    })
+    .catch(error => {
+        showNotification('Error: ' + error, 'error');
+    });
+}
+
+function redirectToOrderList() {
+    window.location.href = 'orderlist.php?customer=<?= urlencode($userid) ?>';
+}
+
+function redirectToRefund() {
+    window.location.href = 'refund_list.php?customer=<?= urlencode($userid) ?>';
+}
+
+function showNotification(message, type) {
+    let toastContainer = document.getElementById('toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toast-container';
+        toastContainer.className = 'toast toast-top toast-end z-[9999]';
+        document.body.appendChild(toastContainer);
+    }
+    
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+    const icon = type === 'success' 
+        ? '<svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
+        : '<svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>';
+        
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert ${alertClass} shadow-lg py-2.5 transition-all duration-300 transform translate-x-full opacity-0`;
+    alertDiv.innerHTML = `
+        <div class="flex items-center gap-2">
+            ${icon}
+            <span class="text-sm font-semibold">${message}</span>
+        </div>
+    `;
+    
+    toastContainer.appendChild(alertDiv);
+    
+    setTimeout(() => {
+        alertDiv.classList.remove('translate-x-full', 'opacity-0');
+    }, 10);
+    
+    setTimeout(() => {
+        alertDiv.classList.add('translate-x-full', 'opacity-0');
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 300);
+    }, 3000);
+}
+</script>
+
+<?php include 'includes/footer.php'; ?>

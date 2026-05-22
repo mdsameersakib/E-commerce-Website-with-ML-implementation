@@ -1,33 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" data-theme="luxury">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Form</title>   
-     <link rel="stylesheet" href="css/style.css">
+    <title>Login - E-Commerce Platform</title>   
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/d3eca7cd97.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+        }
+    </style>
 </head>
-<body>
-
-
-<form action="actions/login_test.php" method="post">
-        <div class="welcome-message">
-                <h1><b>WElCOME TO OUR WEBSITE, PLEASE LOGIN..</b></h1>
+<body class="min-h-screen bg-gradient-to-br from-base-300 via-base-100 to-base-300 flex items-center justify-center p-4">
+    <div class="card w-full max-w-md bg-base-200/80 backdrop-blur-md shadow-2xl border border-white/5 animate-fade-in">
+        <div class="card-body">
+            <div class="flex flex-col items-center mb-6">
+                <div class="w-16 h-16 bg-gradient-to-tr from-primary to-secondary rounded-2xl flex items-center justify-center text-primary-content text-3xl shadow-lg mb-4">
+                    <i class="fa-solid fa-holly-berry"></i>
+                </div>
+                <h2 class="card-title text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Welcome Back</h2>
+                <p class="text-sm text-base-content/60">Enter your credentials to access your account</p>
             </div>
-        <label for="userid">User ID:</label>
-        <input type="text"  class="box2"s id="userid" name="userid">
-        <label for="password">Password:</label>
-        <input type="password" class="box2"s id="password" name="password">
-        <div style="height: 30px;"></div>
-        <input type="submit" class="button-5" style="background-color: slategray; width: 100%;" value="Submit">
-        <div style="height: 30px;"></div>
-        <?php if(isset($_GET['name_error'])) { ?>
-            <h2 id="message"><?php echo $_GET['name_error'] ?></h2>
-        <?php } ?>
-        <div class="create-account">
-            No account? <a href="reg_form.php">Create Account</a>
+
+            <?php if (isset($_GET['name_error'])): ?>
+                <div class="alert alert-error mb-4 shadow-sm py-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span class="text-sm"><?php echo htmlspecialchars($_GET['name_error']); ?></span>
+                </div>
+            <?php endif; ?>
+
+            <form action="actions/login_test.php" method="post" class="space-y-4">
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text font-semibold">User ID</span>
+                    </label>
+                    <label class="input-group">
+                        <div class="join w-full">
+                            <span class="join-item bg-base-300 border-base-300 flex items-center px-4"><i class="fa-solid fa-user text-primary"></i></span>
+                            <input type="text" name="userid" placeholder="e.g. 00001 or EMP1" class="input input-bordered w-full join-item focus:outline-none focus:border-primary" required />
+                        </div>
+                    </label>
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text font-semibold">Password</span>
+                    </label>
+                    <div class="join w-full">
+                        <span class="join-item bg-base-300 border-base-300 flex items-center px-4"><i class="fa-solid fa-lock text-primary"></i></span>
+                        <input type="password" name="password" placeholder="••••••••" class="input input-bordered w-full join-item focus:outline-none focus:border-primary" required />
+                    </div>
+                </div>
+
+                <div class="form-control mt-6">
+                    <button type="submit" class="btn btn-primary bg-gradient-to-r from-primary to-secondary border-none hover:opacity-90 transition-all duration-300 text-white font-bold tracking-wide">
+                        Sign In
+                    </button>
+                </div>
+            </form>
+
+            <div class="divider text-xs text-base-content/40">OR</div>
+
+            <div class="text-center">
+                <p class="text-sm text-base-content/70">
+                    Don't have an account? 
+                    <a href="reg_form.php" class="link link-primary font-semibold hover:text-primary-focus transition-colors">Create Account</a>
+                </p>
+            </div>
         </div>
-    </form>
+    </div>
 </body>
 </html>
-

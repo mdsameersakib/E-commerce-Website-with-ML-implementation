@@ -7,46 +7,47 @@ if (isset($_POST['product_id']) && isset($_POST['quantity'])) {
     $productId = $_POST['product_id'];
     $newQuantity = $_POST['quantity'];
 
-    // Start a transaction
-    mysqli_begin_transaction($conn);
+    try {
+        // Start a transaction
+        $conn->beginTransaction();
 
-    // Fetch the current stock of the product
-    $sql_get_stock = "SELECT stock FROM product WHERE product_id = $productId FOR UPDATE";
-    $result_get_stock = mysqli_query($conn, $sql_get_stock);
+        // Fetch the current stock of the product
+        $sql_get_stock = "SELECT stock FROM product WHERE product_id = ? FOR UPDATE";
+        $stmt_get_stock = $conn->prepare($sql_get_stock);
+        $stmt_get_stock->execute([$productId]);
+        $row = $stmt_get_stock->fetch(PDO::FETCH_ASSOC);
 
-    if ($result_get_stock && mysqli_num_rows($result_get_stock) > 0) {
-        $row = mysqli_fetch_assoc($result_get_stock);
-        $currentStock = $row['stock'];
+        if ($row) {
+            $currentStock = $row['stock'];
 
-        // Check if there is enough stock to update
-        if ($currentStock >= $newQuantity) {
-            // Calculate the new stock after subtracting the quantity
-            $newStock = $currentStock - $newQuantity;
+            // Check if there is enough stock to update
+            if ($currentStock >= $newQuantity) {
+                // Calculate the new stock after subtracting the quantity
+                $newStock = $currentStock - $newQuantity;
 
-            // Update the stock in the database
-            $sql_update_stock = "UPDATE product SET stock = $newStock WHERE product_id = $productId";
-            if (mysqli_query($conn, $sql_update_stock)) {
+                // Update the stock in the database
+                $sql_update_stock = "UPDATE product SET stock = ? WHERE product_id = ?";
+                $stmt_update_stock = $conn->prepare($sql_update_stock);
+                $stmt_update_stock->execute([$newStock, $productId]);
+
                 // Commit the transaction
-                mysqli_commit($conn);
-                // Quantity updated successfully
+                $conn->commit();
                 echo 'success';
             } else {
                 // Rollback the transaction
-                mysqli_rollback($conn);
-                // Failed to update quantity
-                echo 'error';
+                $conn->rollBack();
+                echo 'insufficient_stock';
             }
         } else {
             // Rollback the transaction
-            mysqli_rollback($conn);
-            // Insufficient stock
-            echo 'insufficient_stock';
+            $conn->rollBack();
+            echo 'error_fetching_stock';
         }
-    } else {
-        // Rollback the transaction
-        mysqli_rollback($conn);
-        // Failed to fetch stock
-        echo 'error_fetching_stock';
+    } catch (PDOException $e) {
+        if ($conn->inTransaction()) {
+            $conn->rollBack();
+        }
+        echo 'error';
     }
 } else {
     // Invalid request

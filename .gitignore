@@ -1,0 +1,22 @@
+# Database & site configuration (credentials)
+includes/config.php
+
+# User uploads
+uploads/
+
+# IDE files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python files
+__pycache__/
+*.pyc

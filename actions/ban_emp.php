@@ -1,17 +1,19 @@
 <?php
-// Include database connection file
 include '../includes/dbconnect.php';
 
-// Initialize $res_u variable
-// Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $employee_id = $_POST['employee_id']; // Change $_GET to $_POST
-    $sql = "DELETE FROM employee WHERE employee_id = '$employee_id'";
-    $res = mysqli_query($conn, $sql); // Added semicolon at the end of the line
-    if ($res) {
-        echo "Data inserted successfully";
-    } else {
-        echo "Error inserting data: " . mysqli_error($conn);
+    $employee_id = $_POST['employee_id'];
+    try {
+        $sql = "DELETE FROM employee WHERE employee_id = ?";
+        $stmt = $conn->prepare($sql);
+        $res = $stmt->execute([$employee_id]);
+        if ($res) {
+            echo "Data inserted successfully";
+        } else {
+            echo "Error inserting data";
+        }
+    } catch (PDOException $e) {
+        echo "Error inserting data: " . $e->getMessage();
     }
 }
 ?>

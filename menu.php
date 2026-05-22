@@ -1,168 +1,159 @@
 <?php
-    // Include database connection file
+    $page_title = "ShopSphere - Premium E-Commerce";
+    include 'includes/header.php';
     include 'includes/dbconnect.php';
 
-    // Function to fetch user details by ID
-    function fetchUserDetails($conn, $userid) {
-        // Define your SQL query
-        $sql_u = "SELECT * FROM customer where customer_id = $userid";
-        // Execute the query
-        $res_u = mysqli_query($conn, $sql_u);
-        // Fetch the row
-        $row = mysqli_fetch_assoc($res_u);
-        // Check if a row is fetched
-        if($row) {
-            return $row;
-        } else {
-            return false;
-        }
-    }
-
-    // Check if userid is set in the URL
-    if(isset($_GET['userid'])) {
-        $userid = $_GET['userid'];
-        // Fetch user details
-        $row = fetchUserDetails($conn, $userid);
-        // Check if user details are fetched
-        if($row) {
-            // Assign userid
-            $userid = $row['customer_id'];
-        } else {
-            // Handle case where no user details are fetched
-            // For example, redirect to an error page
-            header("Location: error.php");
-            exit();
-        }
-    } else {
-        // Handle case where userid is not set in the URL
-        // For example, redirect to an error page
-        header("Location: error.php");
+    // Fetch user details
+    $stmt = $conn->prepare("SELECT * FROM customer WHERE customer_id = ?");
+    $stmt->execute([$userid]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        header("Location: login.php");
         exit();
     }
 ?>
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu page</title>
-    <link rel="stylesheet" href="css/menustyle.css">
-    <script src="https://kit.fontawesome.com/d3eca7cd97.js" crossorigin="anonymous"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap"
-        rel="stylesheet">
-
-</head>
-<body>
-    <section class="body">
-        <header class="header">
-            <div class="logo">
-            <span class="logotext"><i class="fa-solid fa-holly-berry"></i></span>
+<!-- Hero Section -->
+<div class="hero min-h-[40vh] rounded-3xl overflow-hidden bg-gradient-to-br from-base-200 via-base-300 to-base-200 border border-white/5 shadow-2xl mb-12 relative">
+    <div class="absolute inset-0 bg-grid-pattern opacity-10"></div>
+    <div class="hero-content text-center py-12">
+        <div class="max-w-2xl">
+            <div class="badge badge-primary gap-1 mb-4 py-3 px-4 font-bold text-sm tracking-wide shadow-md">
+                <i class="fa-solid fa-sparkles"></i> Welcome to the Future of Shopping
             </div>
-
-            <div class="menu_icon">
-                <i class="fa-solid fa-bars"></i>
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4">
+                Hello, <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary"><?php echo htmlspecialchars($row['Cname']); ?></span>!
+            </h1>
+            <p class="text-base-content/70 max-w-lg mx-auto text-lg mb-8 leading-relaxed">
+                Discover curated collections, top-rated essentials, and experience real-time smart suggestions customized just for you.
+            </p>
+            <div class="flex justify-center gap-4 flex-wrap">
+                <a href="#categories-section" class="btn btn-primary bg-gradient-to-r from-primary to-secondary border-none hover:opacity-90 transition-all text-white font-bold px-8 shadow-lg">
+                    Browse Categories
+                </a>
+                <a href="orderlist.php?customer=<?php echo $userid; ?>" class="btn btn-outline btn-secondary font-bold px-8">
+                    View Orders
+                </a>
             </div>
-
-            <nav class="navbar">
-                <a href="menu.php?userid=<?php echo $userid; ?>">Menu</a>
-                <div class="dropdown">
-                    <a href="">Categories</a>
-                    <div class="dropdown-content">
-                      <a href="categories/category_electronics.php?userid=<?php echo $userid; ?>">Electronics</a>
-                      <a href="categories/category_accessories.php?userid=<?php echo $userid; ?>">Accessories</a>
-                      <a href="categories/category_clothes.php?userid=<?php echo $userid;?>">Clothes</a>
-                      <a href="categories/category_stationery.php?userid=<?php echo $userid; ?>">Stationery</a>
-                      <a href="categories/category_selfcare.php?userid=<?php echo $userid; ?>">Self Care</a>
-                      <a href="categories/category_healthcare.php?userid=<?php echo $userid; ?>">Health Care</a>
-                      <a href="categories/category_food.php?userid=<?php echo $userid; ?>">Food Items</a>
-                      <a href="categories/category_household.php?userid=<?php echo $userid; ?>">Household</a>
-                    </div>
-                  </div>
-            </nav>
-
-            <div class="nav_icon">
-                <a href="wishlist.php?customer=<?php echo $userid; ?>"><i class="fa-solid fa-heart"></i></a>
-                <a href="cart.php?customer=<?php echo $userid; ?>"><i class="fa-solid fa-cart-shopping"></i></a>
-                
-                <a href="profile.php?customer=<?php echo $userid; ?>"><i class="fa-solid fa-user"></i></a>
-            </div>
-        </header>
-        <div class="placeholderImg">
-
         </div>
+    </div>
+</div>
 
-        <div class="gap"></div>
-        <p></p>
-        <h1 class="titleUser">Welcome,  <span class="Cusername"><?php echo $row['Cname'] ; ?></span></h1>
-        <hr>
-        <section class="categories">
+<!-- Categories Section -->
+<section id="categories-section" class="mb-12 scroll-mt-24">
+    <div class="flex flex-col md:flex-row justify-between items-baseline mb-8 gap-4 border-b border-white/5 pb-4">
+        <div>
+            <h2 class="text-3xl font-extrabold tracking-tight">Explore Categories</h2>
+            <p class="text-sm text-base-content/50 mt-1">Browse our range of meticulously selected collections</p>
+        </div>
+        <div class="badge badge-outline badge-primary font-semibold py-3 px-4">8 Departments</div>
+    </div>
 
-            <h1 class="title">Categories</h1>
-            <div>
-                <div class="category_section">
-                    <a href="categories/category_electronics.php?userid=<?php echo $userid; ?>">
-                        <div>
-                            <i class="fa-solid fa-plug"></i>
-                            <p>Electronics</p>
-                        </div>
-                    </a>
-                    <a href="categories/category_accessories.php?userid=<?php echo $userid; ?>">
-                        <div>
-                            <i class="fa-solid fa-gem"></i>
-                            <p>Accessories</p>
-                        </div>
-                    </a>
-                    <a href="categories/category_clothes.php?userid=<?php echo $userid; ?>">
-                        <div>
-                            <i class="fa-solid fa-shirt"></i>
-                            <p>Clothes</p>
-                        </div>
-                    </a>
-                    <a href="categories/category_stationery.php?userid=<?php echo $userid; ?>">
-                        <div>
-                            <i class="fa-solid fa-book-open"></i>
-                            <p>Stationary</p>
-                        </div>
-                    </a>
-
-                </div>
-                <div class="category_section">
-                    <a href="categories/category_selfcare.php?userid=<?php echo $userid; ?>">
-                        <div>
-                            <i class="fa-solid fa-mask"></i>
-                            <p>Self Care</p>
-                        </div>
-                    </a>
-                    <a href="categories/category_healthcare.php?userid=<?php echo $userid; ?>">
-                        <div>
-                            <i class="fa-solid fa-kit-medical"></i>
-                            <p>Health Care</p>
-                        </div>
-                    </a>
-                    <a href="categories/category_food.php?userid=<?php echo $userid; ?>">
-                        <div>
-                            <i class="fa-solid fa-utensils"></i>
-                            <p>Food Items</p>
-                        </div>
-                    </a>
-                    <a href="categories/category_household.php?userid=<?php echo $userid; ?>">
-                        <div>
-                            <i class="fa-solid fa-kitchen-set"></i>
-                            <p>Household</p>
-                        </div>
-                    </a>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Category Card: Electronics -->
+        <a href="categories/category_electronics.php?userid=<?php echo $userid; ?>" class="group">
+            <div class="card bg-base-200 border border-white/5 group-hover:border-primary/30 shadow-xl group-hover:shadow-2xl transition-all duration-300 overflow-hidden h-full">
+                <div class="card-body items-center text-center p-8 relative">
+                    <div class="w-16 h-16 rounded-2xl bg-primary/10 group-hover:bg-primary/20 text-primary text-3xl flex items-center justify-center mb-4 transition-colors duration-300">
+                        <i class="fa-solid fa-plug group-hover:scale-110 transition-transform duration-300"></i>
+                    </div>
+                    <h3 class="card-title text-xl font-bold group-hover:text-primary transition-colors">Electronics</h3>
+                    <p class="text-xs text-base-content/60 mt-1">Smart gadgets, computing, and high-tech appliances.</p>
                 </div>
             </div>
-        </section>
-        <hr>
-    </section>
-    
-</body>
+        </a>
 
-</html>
+        <!-- Category Card: Accessories -->
+        <a href="categories/category_accessories.php?userid=<?php echo $userid; ?>" class="group">
+            <div class="card bg-base-200 border border-white/5 group-hover:border-primary/30 shadow-xl group-hover:shadow-2xl transition-all duration-300 overflow-hidden h-full">
+                <div class="card-body items-center text-center p-8 relative">
+                    <div class="w-16 h-16 rounded-2xl bg-secondary/10 group-hover:bg-secondary/20 text-secondary text-3xl flex items-center justify-center mb-4 transition-colors duration-300">
+                        <i class="fa-solid fa-gem group-hover:scale-110 transition-transform duration-300"></i>
+                    </div>
+                    <h3 class="card-title text-xl font-bold group-hover:text-secondary transition-colors">Accessories</h3>
+                    <p class="text-xs text-base-content/60 mt-1">Stunning jewelry, bags, watches, and modern styling.</p>
+                </div>
+            </div>
+        </a>
 
+        <!-- Category Card: Clothes -->
+        <a href="categories/category_clothes.php?userid=<?php echo $userid; ?>" class="group">
+            <div class="card bg-base-200 border border-white/5 group-hover:border-primary/30 shadow-xl group-hover:shadow-2xl transition-all duration-300 overflow-hidden h-full">
+                <div class="card-body items-center text-center p-8 relative">
+                    <div class="w-16 h-16 rounded-2xl bg-accent/10 group-hover:bg-accent/20 text-accent text-3xl flex items-center justify-center mb-4 transition-colors duration-300">
+                        <i class="fa-solid fa-shirt group-hover:scale-110 transition-transform duration-300"></i>
+                    </div>
+                    <h3 class="card-title text-xl font-bold group-hover:text-accent transition-colors">Clothes</h3>
+                    <p class="text-xs text-base-content/60 mt-1">Premium fashion wear, footwear, and apparel choices.</p>
+                </div>
+            </div>
+        </a>
 
+        <!-- Category Card: Stationery -->
+        <a href="categories/category_stationery.php?userid=<?php echo $userid; ?>" class="group">
+            <div class="card bg-base-200 border border-white/5 group-hover:border-primary/30 shadow-xl group-hover:shadow-2xl transition-all duration-300 overflow-hidden h-full">
+                <div class="card-body items-center text-center p-8 relative">
+                    <div class="w-16 h-16 rounded-2xl bg-info/10 group-hover:bg-info/20 text-info text-3xl flex items-center justify-center mb-4 transition-colors duration-300">
+                        <i class="fa-solid fa-book-open group-hover:scale-110 transition-transform duration-300"></i>
+                    </div>
+                    <h3 class="card-title text-xl font-bold group-hover:text-info transition-colors">Stationery</h3>
+                    <p class="text-xs text-base-content/60 mt-1">Premium books, supplies, journals, and organization.</p>
+                </div>
+            </div>
+        </a>
+
+        <!-- Category Card: Self Care -->
+        <a href="categories/category_selfcare.php?userid=<?php echo $userid; ?>" class="group">
+            <div class="card bg-base-200 border border-white/5 group-hover:border-primary/30 shadow-xl group-hover:shadow-2xl transition-all duration-300 overflow-hidden h-full">
+                <div class="card-body items-center text-center p-8 relative">
+                    <div class="w-16 h-16 rounded-2xl bg-success/10 group-hover:bg-success/20 text-success text-3xl flex items-center justify-center mb-4 transition-colors duration-300">
+                        <i class="fa-solid fa-mask group-hover:scale-110 transition-transform duration-300"></i>
+                    </div>
+                    <h3 class="card-title text-xl font-bold group-hover:text-success transition-colors">Self Care</h3>
+                    <p class="text-xs text-base-content/60 mt-1">Skincare, cosmetics, personal hygiene, and beauty.</p>
+                </div>
+            </div>
+        </a>
+
+        <!-- Category Card: Health Care -->
+        <a href="categories/category_healthcare.php?userid=<?php echo $userid; ?>" class="group">
+            <div class="card bg-base-200 border border-white/5 group-hover:border-primary/30 shadow-xl group-hover:shadow-2xl transition-all duration-300 overflow-hidden h-full">
+                <div class="card-body items-center text-center p-8 relative">
+                    <div class="w-16 h-16 rounded-2xl bg-warning/10 group-hover:bg-warning/20 text-warning text-3xl flex items-center justify-center mb-4 transition-colors duration-300">
+                        <i class="fa-solid fa-kit-medical group-hover:scale-110 transition-transform duration-300"></i>
+                    </div>
+                    <h3 class="card-title text-xl font-bold group-hover:text-warning transition-colors">Health Care</h3>
+                    <p class="text-xs text-base-content/60 mt-1">Wellness, vitamins, supplements, and physical safety.</p>
+                </div>
+            </div>
+        </a>
+
+        <!-- Category Card: Food Items -->
+        <a href="categories/category_food.php?userid=<?php echo $userid; ?>" class="group">
+            <div class="card bg-base-200 border border-white/5 group-hover:border-primary/30 shadow-xl group-hover:shadow-2xl transition-all duration-300 overflow-hidden h-full">
+                <div class="card-body items-center text-center p-8 relative">
+                    <div class="w-16 h-16 rounded-2xl bg-error/10 group-hover:bg-error/20 text-error text-3xl flex items-center justify-center mb-4 transition-colors duration-300">
+                        <i class="fa-solid fa-utensils group-hover:scale-110 transition-transform duration-300"></i>
+                    </div>
+                    <h3 class="card-title text-xl font-bold group-hover:text-error transition-colors">Food Items</h3>
+                    <p class="text-xs text-base-content/60 mt-1">Fresh groceries, beverages, snacks, and delicious treats.</p>
+                </div>
+            </div>
+        </a>
+
+        <!-- Category Card: Household -->
+        <a href="categories/category_household.php?userid=<?php echo $userid; ?>" class="group">
+            <div class="card bg-base-200 border border-white/5 group-hover:border-primary/30 shadow-xl group-hover:shadow-2xl transition-all duration-300 overflow-hidden h-full">
+                <div class="card-body items-center text-center p-8 relative">
+                    <div class="w-16 h-16 rounded-2xl bg-neutral-content/10 group-hover:bg-neutral-content/20 text-neutral-content text-3xl flex items-center justify-center mb-4 transition-colors duration-300">
+                        <i class="fa-solid fa-kitchen-set group-hover:scale-110 transition-transform duration-300"></i>
+                    </div>
+                    <h3 class="card-title text-xl font-bold transition-colors">Household</h3>
+                    <p class="text-xs text-base-content/60 mt-1">Kitchen tools, furniture, decor, and cleaning essentials.</p>
+                </div>
+            </div>
+        </a>
+    </div>
+</section>
+
+<?php include 'includes/footer.php'; ?>
