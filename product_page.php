@@ -1,6 +1,6 @@
 <?php
     // Include database connection file
-    include 'dbconnect.php';
+    include 'includes/dbconnect.php';
      // Exclude products with order_id assigned
     $customer_id = $_GET['customer'];
     $product_id= $_GET['product'];
@@ -14,13 +14,13 @@
     $pname = $row_p['Pname']; // Example product name
 
     // Define the path to the file
-    $filename = "X:/xamp/htdocs/product_name.txt";
+    $filename = __DIR__ . "/ml/product_name.txt";
     
     // Write the product name to the file
     file_put_contents($filename, $pname);
     
     // Execute Python script
-    exec("python db_test.py");
+    exec("python " . __DIR__ . "/ml/db_test.py");
     $imageData = $row_p['image'];
     $sql_r = "SELECT review.user_review, customer.Cname
           FROM review
@@ -36,7 +36,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu page</title>
-    <link rel="stylesheet" href="menustyle.css">
+    <link rel="stylesheet" href="css/menustyle.css">
     <script src="https://kit.fontawesome.com/d3eca7cd97.js" crossorigin="anonymous"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -62,14 +62,14 @@
                 <div class="dropdown">
                     <a href="">Categories</a>
                     <div class="dropdown-content">
-                      <a href="category_electronics.php?userid=<?php echo  $customer_id; ?>">Electronics</a>
-                      <a href="category_accessories.php?userid=<?php echo  $customer_id; ?>">Accessories</a>
-                      <a href="category_clothes.php?userid=<?php echo  $customer_id; ?>">Clothes</a>
-                      <a href="category_stationery.php?userid=<?php echo  $customer_id; ?>">Stationery</a>
-                      <a href="category_selfcare.php?userid=<?php echo  $customer_id; ?>">Self Care</a>
-                      <a href="category_healthcare.php?userid=<?php echo  $customer_id; ?>">Health Care</a>
-                      <a href="category_food.php?userid=<?php echo  $customer_id; ?>">Food Items</a>
-                      <a href="category_household.php?userid=<?php echo  $customer_id; ?>">Household</a>
+                      <a href="categories/category_electronics.php?userid=<?php echo  $customer_id; ?>">Electronics</a>
+                      <a href="categories/category_accessories.php?userid=<?php echo  $customer_id; ?>">Accessories</a>
+                      <a href="categories/category_clothes.php?userid=<?php echo  $customer_id; ?>">Clothes</a>
+                      <a href="categories/category_stationery.php?userid=<?php echo  $customer_id; ?>">Stationery</a>
+                      <a href="categories/category_selfcare.php?userid=<?php echo  $customer_id; ?>">Self Care</a>
+                      <a href="categories/category_healthcare.php?userid=<?php echo  $customer_id; ?>">Health Care</a>
+                      <a href="categories/category_food.php?userid=<?php echo  $customer_id; ?>">Food Items</a>
+                      <a href="categories/category_household.php?userid=<?php echo  $customer_id; ?>">Household</a>
                     </div>
                   </div>
             </nav>
@@ -86,7 +86,7 @@
             <div class="product_page_1_2">
             <?php
                 // Define the path to the Python script
-                $result_filename = "X:/xamp/htdocs/result_array.txt";
+                $result_filename = __DIR__ . "/ml/result_array.txt";
                 $result_array = file($result_filename, FILE_IGNORE_NEW_LINES);
                 $query = "SELECT * FROM product WHERE Pname IN (";
                 foreach ($result_array as $productName) {
@@ -241,7 +241,7 @@
             console.log(y);
             const varia = document.getElementById("cus");
             let cid = varia.innerText;
-            fetch('addtocart.php', {
+            fetch('actions/addtocart.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -265,7 +265,7 @@
             const varia = document.getElementById("cus");
             let cid = varia.innerText;
 
-            fetch('addtowishlist.php', {
+            fetch('actions/addtowishlist.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -290,7 +290,7 @@
             let pid = varia_p.innerText;
             console.log(pid);
 
-            fetch('give_rating.php', {
+            fetch('actions/give_rating.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -318,7 +318,7 @@
             var reviewText = document.getElementById("review_text").value;
             console.log('Review given: ' + reviewText);
             console.log(cid);
-            fetch('give_review.php', {
+            fetch('actions/give_review.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

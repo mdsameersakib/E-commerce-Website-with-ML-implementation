@@ -1,6 +1,6 @@
 <?php
     // Include database connection file
-    include 'dbconnect.php';
+    include 'includes/dbconnect.php';
 
     // Function to fetch user details by ID
     function fetchUserDetails($conn, $userid) {
@@ -47,7 +47,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu page</title>
-    <link rel="stylesheet" href="menustyle.css">
+    <link rel="stylesheet" href="css/menustyle.css">
     <script src="https://kit.fontawesome.com/d3eca7cd97.js" crossorigin="anonymous"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -72,14 +72,14 @@
                 <div class="dropdown">
                     <a href="">Categories</a>
                     <div class="dropdown-content">
-                      <a href="category_electronics.php?userid=<?php echo $userid; ?>">Electronics</a>
-                      <a href="category_accessories.php?userid=<?php echo $userid; ?>">Accessories</a>
-                      <a href="category_clothes.php?userid=<?php echo $userid;?>">Clothes</a>
-                      <a href="category_stationery.php?userid=<?php echo $userid; ?>">Stationery</a>
-                      <a href="category_selfcare.php?userid=<?php echo $userid; ?>">Self Care</a>
-                      <a href="category_healthcare.php?userid=<?php echo $userid; ?>">Health Care</a>
-                      <a href="category_food.php?userid=<?php echo $userid; ?>">Food Items</a>
-                      <a href="category_household.php?userid=<?php echo $userid; ?>">Household</a>
+                      <a href="categories/category_electronics.php?userid=<?php echo $userid; ?>">Electronics</a>
+                      <a href="categories/category_accessories.php?userid=<?php echo $userid; ?>">Accessories</a>
+                      <a href="categories/category_clothes.php?userid=<?php echo $userid;?>">Clothes</a>
+                      <a href="categories/category_stationery.php?userid=<?php echo $userid; ?>">Stationery</a>
+                      <a href="categories/category_selfcare.php?userid=<?php echo $userid; ?>">Self Care</a>
+                      <a href="categories/category_healthcare.php?userid=<?php echo $userid; ?>">Health Care</a>
+                      <a href="categories/category_food.php?userid=<?php echo $userid; ?>">Food Items</a>
+                      <a href="categories/category_household.php?userid=<?php echo $userid; ?>">Household</a>
                     </div>
                   </div>
             </nav>
@@ -104,25 +104,25 @@
             <h1 class="title">Categories</h1>
             <div>
                 <div class="category_section">
-                    <a href="category_electronics.php?userid=<?php echo $userid; ?>">
+                    <a href="categories/category_electronics.php?userid=<?php echo $userid; ?>">
                         <div>
                             <i class="fa-solid fa-plug"></i>
                             <p>Electronics</p>
                         </div>
                     </a>
-                    <a href="category_accessories.php?userid=<?php echo $userid; ?>">
+                    <a href="categories/category_accessories.php?userid=<?php echo $userid; ?>">
                         <div>
                             <i class="fa-solid fa-gem"></i>
                             <p>Accessories</p>
                         </div>
                     </a>
-                    <a href="category_clothes.php?userid=<?php echo $userid; ?>">
+                    <a href="categories/category_clothes.php?userid=<?php echo $userid; ?>">
                         <div>
                             <i class="fa-solid fa-shirt"></i>
                             <p>Clothes</p>
                         </div>
                     </a>
-                    <a href="category_stationery.php?userid=<?php echo $userid; ?>">
+                    <a href="categories/category_stationery.php?userid=<?php echo $userid; ?>">
                         <div>
                             <i class="fa-solid fa-book-open"></i>
                             <p>Stationary</p>
@@ -131,25 +131,25 @@
 
                 </div>
                 <div class="category_section">
-                    <a href="category_selfcare.php?userid=<?php echo $userid; ?>">
+                    <a href="categories/category_selfcare.php?userid=<?php echo $userid; ?>">
                         <div>
                             <i class="fa-solid fa-mask"></i>
                             <p>Self Care</p>
                         </div>
                     </a>
-                    <a href="category_healthcare.php?userid=<?php echo $userid; ?>">
+                    <a href="categories/category_healthcare.php?userid=<?php echo $userid; ?>">
                         <div>
                             <i class="fa-solid fa-kit-medical"></i>
                             <p>Health Care</p>
                         </div>
                     </a>
-                    <a href="category_food.php?userid=<?php echo $userid; ?>">
+                    <a href="categories/category_food.php?userid=<?php echo $userid; ?>">
                         <div>
                             <i class="fa-solid fa-utensils"></i>
                             <p>Food Items</p>
                         </div>
                     </a>
-                    <a href="category_household.php?userid=<?php echo $userid; ?>">
+                    <a href="categories/category_household.php?userid=<?php echo $userid; ?>">
                         <div>
                             <i class="fa-solid fa-kitchen-set"></i>
                             <p>Household</p>

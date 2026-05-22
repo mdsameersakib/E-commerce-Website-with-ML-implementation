@@ -1,6 +1,6 @@
 <?php
     // Include database connection file
-    include 'dbconnect.php';
+    include 'includes/dbconnect.php';
 
     // Fetch user ID from URL parameter
     $customer_id = 00056;
@@ -51,7 +51,7 @@
     // Generate recommendations for a specific user
     function generate_recommendations($customer_id, $n=10){
         // Call Python script to generate recommendations
-        $command = escapeshellcmd("python generate_recommendations.py " . $customer_id);
+        $command = escapeshellcmd("python " . __DIR__ . "/ml/generate_recommendations.py " . $customer_id);
         $output = shell_exec($command);
         $recommendations = json_decode($output, true);
         return $recommendations;

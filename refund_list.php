@@ -1,7 +1,7 @@
 <?php
 
     // Include database connection file
-    include 'dbconnect.php';
+    include 'includes/dbconnect.php';
     $customer_id = $_GET['customer'];
     // Define your SQL query
     $sql_u = "SELECT DISTINCT
@@ -32,7 +32,7 @@ WHERE
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu page</title>
-    <link rel="stylesheet" href="menustyle.css">
+    <link rel="stylesheet" href="css/menustyle.css">
     <script src="https://kit.fontawesome.com/d3eca7cd97.js" crossorigin="anonymous"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -58,14 +58,14 @@ WHERE
                 <div class="dropdown">
                     <a href="">Categories</a>
                     <div class="dropdown-content">
-                      <a href="category_electronics.php?userid=<?php echo  $customer_id; ?>">Electronics</a>
-                      <a href="category_accessories.php?userid=<?php echo  $customer_id; ?>">Accessories</a>
-                      <a href="category_clothes.php?userid=<?php echo  $customer_id; ?>">Clothes</a>
-                      <a href="category_stationery.php?userid=<?php echo  $customer_id; ?>">Stationery</a>
-                      <a href="category_selfcare.php?userid=<?php echo  $customer_id; ?>">Self Care</a>
-                      <a href="category_healthcare.php?userid=<?php echo  $customer_id; ?>">Health Care</a>
-                      <a href="category_food.php?userid=<?php echo  $customer_id; ?>">Food Items</a>
-                      <a href="category_household.php?userid=<?php echo  $customer_id; ?>">Household</a>
+                      <a href="categories/category_electronics.php?userid=<?php echo  $customer_id; ?>">Electronics</a>
+                      <a href="categories/category_accessories.php?userid=<?php echo  $customer_id; ?>">Accessories</a>
+                      <a href="categories/category_clothes.php?userid=<?php echo  $customer_id; ?>">Clothes</a>
+                      <a href="categories/category_stationery.php?userid=<?php echo  $customer_id; ?>">Stationery</a>
+                      <a href="categories/category_selfcare.php?userid=<?php echo  $customer_id; ?>">Self Care</a>
+                      <a href="categories/category_healthcare.php?userid=<?php echo  $customer_id; ?>">Health Care</a>
+                      <a href="categories/category_food.php?userid=<?php echo  $customer_id; ?>">Food Items</a>
+                      <a href="categories/category_household.php?userid=<?php echo  $customer_id; ?>">Household</a>
                     </div>
                   </div>
             </nav>

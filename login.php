@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Form</title>   
-     <link rel="stylesheet" href="style.css">
+     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 
-<form action="login_test.php" method="post">
+<form action="actions/login_test.php" method="post">
         <div class="welcome-message">
                 <h1><b>WElCOME TO OUR WEBSITE, PLEASE LOGIN..</b></h1>
             </div>

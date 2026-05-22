@@ -1,6 +1,6 @@
 <?php
     // Include database connection file
-    include 'dbconnect.php';
+    include 'includes/dbconnect.php';
     $sql = "SELECT * FROM customer c JOIN adds a ON c.customer_id = a.customer_id JOIN product p ON a.product_id = p.product_id WHERE c.customer_id =" . $_GET['customer'] . " AND a.order_id='0'"; // Exclude products with order_id assigned
     $res_u = mysqli_query($conn, $sql);
     $customer_id = $_GET['customer'];
@@ -12,7 +12,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu page</title>
-    <link rel="stylesheet" href="menustyle.css">
+    <link rel="stylesheet" href="css/menustyle.css">
     <script src="https://kit.fontawesome.com/d3eca7cd97.js" crossorigin="anonymous"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,14 +38,14 @@
                 <div class="dropdown">
                     <a href="">Categories</a>
                     <div class="dropdown-content">
-                      <a href="category_electronics.php?userid=<?php echo  $customer_id; ?>">Electronics</a>
-                      <a href="category_accessories.php?userid=<?php echo  $customer_id; ?>">Accessories</a>
-                      <a href="category_clothes.php?userid=<?php echo  $customer_id; ?>">Clothes</a>
-                      <a href="category_stationery.php?userid=<?php echo  $customer_id; ?>">Stationery</a>
-                      <a href="category_selfcare.php?userid=<?php echo  $customer_id; ?>">Self Care</a>
-                      <a href="category_healthcare.php?userid=<?php echo  $customer_id; ?>">Health Care</a>
-                      <a href="category_food.php?userid=<?php echo  $customer_id; ?>">Food Items</a>
-                      <a href="category_household.php?userid=<?php echo  $customer_id; ?>">Household</a>
+                      <a href="categories/category_electronics.php?userid=<?php echo  $customer_id; ?>">Electronics</a>
+                      <a href="categories/category_accessories.php?userid=<?php echo  $customer_id; ?>">Accessories</a>
+                      <a href="categories/category_clothes.php?userid=<?php echo  $customer_id; ?>">Clothes</a>
+                      <a href="categories/category_stationery.php?userid=<?php echo  $customer_id; ?>">Stationery</a>
+                      <a href="categories/category_selfcare.php?userid=<?php echo  $customer_id; ?>">Self Care</a>
+                      <a href="categories/category_healthcare.php?userid=<?php echo  $customer_id; ?>">Health Care</a>
+                      <a href="categories/category_food.php?userid=<?php echo  $customer_id; ?>">Food Items</a>
+                      <a href="categories/category_household.php?userid=<?php echo  $customer_id; ?>">Household</a>
                     </div>
                   </div>
             </nav>
@@ -227,7 +227,7 @@ function myFunction(quantityValue, productId) {
                 console.log(y)
                 const varia = document.getElementById("cus");
                 let cid = varia.innerText;
-                fetch('removefromcart.php', {
+                fetch('actions/removefromcart.php', {
 
                     method: 'POST',
                     headers: {

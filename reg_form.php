@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registration Form</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
@@ -14,7 +14,7 @@
     </div>
     <br>
     <div>
-    <form action="test.php" method="post">
+    <form action="actions/register.php" method="post">
     <label for="username">Username:</label>
             <input type="text" class="box2" id="username" name="username">
             <label for="password">Password:</label>
